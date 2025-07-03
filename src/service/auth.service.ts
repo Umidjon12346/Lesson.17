@@ -5,8 +5,8 @@ import type { SignIn } from "../types/auth";
 
 
 export const authService ={
-    async signIn(body:SignIn){
-        const res = await apiConfig().postRequest(ApiUrls.ADMIN_AUTH_LOGIN,body)
+    async signIn(body:SignIn,role:string){
+        const res = await apiConfig().postRequest(`/${role}_auth${ApiUrls.LOGIN}`,body)
         return res
     }
 }
