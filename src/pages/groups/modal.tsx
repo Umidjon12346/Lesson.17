@@ -10,7 +10,6 @@ import {
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-
 const { Option } = Select;
 
 export interface Group {
@@ -25,12 +24,11 @@ interface GroupModalProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (values: Group) => void;
-  courses: { id: number; name: string }[]; // course_id uchun select
 }
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Nomi majburiy"),
-  course_id: Yup.number().required("Kurs tanlanishi kerak"),
+  course_id: Yup.number().required("Kurs ID kerak"),
   status: Yup.string().required("Holat majburiy"),
   start_date: Yup.string().required("Boshlanish sanasi kerak"),
   end_date: Yup.string().required("Tugash sanasi kerak"),
@@ -40,7 +38,6 @@ const GroupModal: React.FC<GroupModalProps> = ({
   visible,
   onClose,
   onSubmit,
-  courses,
 }) => {
   const initialValues: Group = {
     name: "",
@@ -65,77 +62,71 @@ const GroupModal: React.FC<GroupModalProps> = ({
           onClose();
         }}
       >
-        {({ setFieldValue, values }) => (
+        {({ setFieldValue }) => (
           <Form>
             <AntForm.Item label="Guruh nomi">
               <Field as={Input} name="name" placeholder="Guruh nomi" />
               <ErrorMessage
                 name="name"
                 component="div"
-               
+                
               />
             </AntForm.Item>
 
-            <AntForm.Item label="Kurs tanlang">
-              <Select
-                onChange={(value) => setFieldValue("course_id", value)}
-                value={values.course_id || undefined}
-                placeholder="Kursni tanlang"
-              >
-                {courses.map((course) => (
-                  <Option key={course.id} value={course.id}>
-                    {course.name}
-                  </Option>
-                ))}
-              </Select>
+            <AntForm.Item label="Kurs ID">
+              <Field
+                as={Input}
+                name="course_id"
+                type="number"
+                placeholder="Kurs ID"
+              />
               <ErrorMessage
                 name="course_id"
                 component="div"
-               
+                
               />
             </AntForm.Item>
 
             <AntForm.Item label="Holat">
               <Select
                 onChange={(value) => setFieldValue("status", value)}
-                value={values.status || undefined}
                 placeholder="Holatni tanlang"
               >
                 <Option value="active">Active</Option>
-                <Option value="inactive">Inactive</Option>
+                <Option value="new">New</Option>
               </Select>
               <ErrorMessage
                 name="status"
                 component="div"
-               
+                
               />
             </AntForm.Item>
 
             <AntForm.Item label="Boshlanish sanasi">
               <DatePicker
                 style={{ width: "100%" }}
-                onChange={(date, dateString) =>
+                onChange={(_, dateString) =>
                   setFieldValue("start_date", dateString)
                 }
               />
               <ErrorMessage
                 name="start_date"
                 component="div"
-               
+                
               />
             </AntForm.Item>
 
             <AntForm.Item label="Tugash sanasi">
               <DatePicker
                 style={{ width: "100%" }}
-                onChange={(date, dateString) =>
+                onChange={(_, dateString) =>
                   setFieldValue("end_date", dateString)
                 }
               />
               <ErrorMessage
                 name="end_date"
                 component="div"
-               
+                
               />
             </AntForm.Item>
 

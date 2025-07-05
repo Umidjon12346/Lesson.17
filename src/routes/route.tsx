@@ -8,7 +8,6 @@ import {
 import { lazy } from "react";
 import { SignIn, SignUp,StudentLayout,TeacherLayout,AdminLayout,Groups } from "../pages";
 
-// Lazy loaded components
 const App = lazy(() => import("../App"));
 
 function Router() {

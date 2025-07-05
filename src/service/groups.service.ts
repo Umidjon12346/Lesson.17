@@ -11,5 +11,15 @@ export const GroupService = {
   async createGroup(model:Group):Promise<any>{
     const res = await apiConfig().postRequest(ApiUrls.Groups,model)
     return res
+  },
+
+  async deleteGroup(id:number){
+    const res = await apiConfig().deleteRequest(`${ApiUrls.Groups}/${id}`)
+    return res
+  },
+
+  async editGroup(id:number,model:Group){
+    const res = await apiConfig().putRequest(`${ApiUrls.Groups}/${id}`,model)
+    return res
   }
 };

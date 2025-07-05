@@ -1,5 +1,5 @@
 export class ApiUrls{
-    public static LOGIN:string="/logIn"
+    public static LOGIN:string="/log-in"
 
     public static Groups:string="/group"
 }
