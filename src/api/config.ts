@@ -21,7 +21,7 @@ export function apiConfig() {
   }
   async function putRequest(url: string, body: object = {}) {
     try {
-      const res = await axiosInstance.put(url, body);
+      const res = await axiosInstance.patch(url, body);
       return res;
     } catch (error: any) {
       Notification("error", error?.message);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout, Menu, theme } from "antd";
 import { TeamOutlined, UserOutlined } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
@@ -20,6 +20,13 @@ function Admin() {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  // ✅ Redirect to /admin/groups if path is exactly /admin
+  useEffect(() => {
+    if (location.pathname === "/admin") {
+      navigate("/admin/groups");
+    }
+  }, [location.pathname, navigate]);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>

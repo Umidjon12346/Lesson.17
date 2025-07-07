@@ -19,7 +19,7 @@ function Router() {
         
 
         <Route path="admin" element={<AdminLayout/>} >
-          <Route path="groups" element={<Groups/>}/>
+          <Route path="groups" index element={<Groups/>}/>
         </Route>
 
         {/* STUDENT */}

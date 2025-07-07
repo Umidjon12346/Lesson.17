@@ -9,6 +9,7 @@ import {
 } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import dayjs from "dayjs"; // Sana formatlash uchun
 
 const { Option } = Select;
 
@@ -24,6 +25,7 @@ interface GroupModalProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (values: Group) => void;
+  editData?: Group; // yangi props
 }
 
 const validationSchema = Yup.object({
@@ -38,8 +40,9 @@ const GroupModal: React.FC<GroupModalProps> = ({
   visible,
   onClose,
   onSubmit,
+  editData,
 }) => {
-  const initialValues: Group = {
+  const initialValues: Group = editData || {
     name: "",
     course_id: 0,
     status: "",
@@ -49,27 +52,27 @@ const GroupModal: React.FC<GroupModalProps> = ({
 
   return (
     <Modal
-      title="Guruh yaratish"
+      title={editData ? "Guruhni tahrirlash" : "Guruh yaratish"}
       open={visible}
       onCancel={onClose}
       footer={null}
     >
       <Formik
+        enableReinitialize
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
           onSubmit(values);
-          onClose();
         }}
       >
-        {({ setFieldValue }) => (
+        {({ setFieldValue, values }) => (
           <Form>
             <AntForm.Item label="Guruh nomi">
               <Field as={Input} name="name" placeholder="Guruh nomi" />
               <ErrorMessage
                 name="name"
                 component="div"
-                
+        
               />
             </AntForm.Item>
 
@@ -83,12 +86,13 @@ const GroupModal: React.FC<GroupModalProps> = ({
               <ErrorMessage
                 name="course_id"
                 component="div"
-                
+        
               />
             </AntForm.Item>
 
             <AntForm.Item label="Holat">
               <Select
+                value={values.status || undefined}
                 onChange={(value) => setFieldValue("status", value)}
                 placeholder="Holatni tanlang"
               >
@@ -98,13 +102,14 @@ const GroupModal: React.FC<GroupModalProps> = ({
               <ErrorMessage
                 name="status"
                 component="div"
-                
+        
               />
             </AntForm.Item>
 
             <AntForm.Item label="Boshlanish sanasi">
               <DatePicker
                 style={{ width: "100%" }}
+                value={values.start_date ? dayjs(values.start_date) : undefined}
                 onChange={(_, dateString) =>
                   setFieldValue("start_date", dateString)
                 }
@@ -112,13 +117,14 @@ const GroupModal: React.FC<GroupModalProps> = ({
               <ErrorMessage
                 name="start_date"
                 component="div"
-                
+        
               />
             </AntForm.Item>
 
             <AntForm.Item label="Tugash sanasi">
               <DatePicker
                 style={{ width: "100%" }}
+                value={values.end_date ? dayjs(values.end_date) : undefined}
                 onChange={(_, dateString) =>
                   setFieldValue("end_date", dateString)
                 }
@@ -126,7 +132,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
               <ErrorMessage
                 name="end_date"
                 component="div"
-                
+        
               />
             </AntForm.Item>
 

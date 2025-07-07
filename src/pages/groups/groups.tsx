@@ -58,25 +58,36 @@ function Groups() {
   };
 
   const handleSubmit = async (values: Group) => {
+    // id, created_at, updated_at va boshqa keraksiz maydonlarni olib tashlash
+    const cleanedValues = {
+      name: values.name,
+      course_id: values.course_id,
+      status: values.status,
+      start_date: values.start_date,
+      end_date: values.end_date,
+    };
+
     if (editData) {
-      const res = await GroupService.editGroup(editData.id, values);
+      const res = await GroupService.editGroup(editData.id, cleanedValues);
       if (res?.status === 200) {
         message.success("Guruh tahrirlandi");
       } else {
         message.error("Tahrirlashda xatolik");
       }
     } else {
-      const res = await GroupService.createGroup(values);
+      const res = await GroupService.createGroup(cleanedValues);
       if (res?.status === 201 || res?.status === 200) {
         message.success("Guruh yaratildi");
       } else {
         message.error("Yaratishda xatolik");
       }
     }
+
     fetchGroups(pagination.current!, pagination.pageSize!);
     setIsModalOpen(false);
     setEditData(null);
   };
+  
 
   const columns: ColumnsType<GroupWithId> = [
     { title: "Nomi", dataIndex: "name", key: "name" },
@@ -143,7 +154,7 @@ function Groups() {
           setEditData(null);
         }}
         onSubmit={handleSubmit}
-      
+        editData={editData ?? undefined} // ❗️Bu qatordan `editData` propni uzatyapmiz
       />
     </div>
   );
