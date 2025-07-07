@@ -9,7 +9,7 @@ import {
 } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import dayjs from "dayjs"; // Sana formatlash uchun
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -21,19 +21,25 @@ export interface Group {
   end_date: string;
 }
 
+interface Course {
+  id: number;
+  title: string;
+}
+
 interface GroupModalProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (values: Group) => void;
-  editData?: Group; // yangi props
+  editData?: Group;
+  courses: Course[];
 }
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Nomi majburiy"),
-  course_id: Yup.number().required("Kurs ID kerak"),
-  status: Yup.string().required("Holat majburiy"),
-  start_date: Yup.string().required("Boshlanish sanasi kerak"),
-  end_date: Yup.string().required("Tugash sanasi kerak"),
+  course_id: Yup.number().required("Kurs tanlang"),
+  status: Yup.string().required("Holat tanlang"),
+  start_date: Yup.string().required("Boshlanish sanasi"),
+  end_date: Yup.string().required("Tugash sanasi"),
 });
 
 const GroupModal: React.FC<GroupModalProps> = ({
@@ -41,6 +47,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
   onClose,
   onSubmit,
   editData,
+  courses,
 }) => {
   const initialValues: Group = editData || {
     name: "",
@@ -52,7 +59,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
 
   return (
     <Modal
-      title={editData ? "Guruhni tahrirlash" : "Guruh yaratish"}
+      title={editData ? "Guruhni tahrirlash" : "Guruh qo‘shish"}
       open={visible}
       onCancel={onClose}
       footer={null}
@@ -61,33 +68,29 @@ const GroupModal: React.FC<GroupModalProps> = ({
         enableReinitialize
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          onSubmit(values);
-        }}
+        onSubmit={onSubmit}
       >
         {({ setFieldValue, values }) => (
           <Form>
             <AntForm.Item label="Guruh nomi">
               <Field as={Input} name="name" placeholder="Guruh nomi" />
-              <ErrorMessage
-                name="name"
-                component="div"
-        
-              />
+              <ErrorMessage name="name" component="div" />
             </AntForm.Item>
 
-            <AntForm.Item label="Kurs ID">
-              <Field
-                as={Input}
-                name="course_id"
-                type="number"
-                placeholder="Kurs ID"
-              />
-              <ErrorMessage
-                name="course_id"
-                component="div"
-        
-              />
+            <AntForm.Item label="Kurs">
+              <Select
+                value={values.course_id || undefined}
+                onChange={(value) => setFieldValue("course_id", value)}
+                placeholder="Kursni tanlang"
+                style={{ width: "100%" }}
+              >
+                {courses.map((course) => (
+                  <Option key={course.id} value={course.id}>
+                    {course.title}
+                  </Option>
+                ))}
+              </Select>
+              <ErrorMessage name="course_id" component="div" />
             </AntForm.Item>
 
             <AntForm.Item label="Holat">
@@ -99,11 +102,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
                 <Option value="active">Active</Option>
                 <Option value="new">New</Option>
               </Select>
-              <ErrorMessage
-                name="status"
-                component="div"
-        
-              />
+              <ErrorMessage name="status" component="div" />
             </AntForm.Item>
 
             <AntForm.Item label="Boshlanish sanasi">
@@ -114,11 +113,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
                   setFieldValue("start_date", dateString)
                 }
               />
-              <ErrorMessage
-                name="start_date"
-                component="div"
-        
-              />
+              <ErrorMessage name="start_date" component="div" />
             </AntForm.Item>
 
             <AntForm.Item label="Tugash sanasi">
@@ -129,11 +124,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
                   setFieldValue("end_date", dateString)
                 }
               />
-              <ErrorMessage
-                name="end_date"
-                component="div"
-        
-              />
+              <ErrorMessage name="end_date" component="div" />
             </AntForm.Item>
 
             <Button type="primary" htmlType="submit" block>

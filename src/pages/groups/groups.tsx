@@ -2,15 +2,24 @@ import { useEffect, useState } from "react";
 import { Button, Table, message } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { GroupService } from "../../service/groups.service";
+import { CourseService } from "../../service/course.service"
 import type { Group } from "../../types/group";
 import GroupModal from "./modal";
 
 interface GroupWithId extends Group {
   id: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface Course {
+  id: number;
+  title: string;
 }
 
 function Groups() {
   const [groups, setGroups] = useState<GroupWithId[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
@@ -33,14 +42,30 @@ function Groups() {
           total: response.data.data.length,
         });
       }
-    } catch (err) {
+    } catch {
       message.error("Ma'lumotlarni yuklashda xatolik yuz berdi");
     }
     setLoading(false);
   };
 
+  const fetchCourses = async () => {
+    try {
+      const res = await CourseService.getCourses();
+      console.log(res);
+      
+      if (res && res.data && res.data.data) {
+        setCourses(res.data.data);
+      } else {
+        setCourses([]);
+      }
+    } catch {
+      message.error("Kurslarni yuklashda xatolik");
+    }
+  };
+
   useEffect(() => {
     fetchGroups(pagination.current!, pagination.pageSize!);
+    fetchCourses();
   }, []);
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
@@ -52,14 +77,13 @@ function Groups() {
       await GroupService.deleteGroup(id);
       message.success("Guruh o‘chirildi");
       fetchGroups(pagination.current!, pagination.pageSize!);
-    } catch (err) {
+    } catch {
       message.error("O‘chirishda xatolik yuz berdi");
     }
   };
 
   const handleSubmit = async (values: Group) => {
-    // id, created_at, updated_at va boshqa keraksiz maydonlarni olib tashlash
-    const cleanedValues = {
+    const payload = {
       name: values.name,
       course_id: values.course_id,
       status: values.status,
@@ -67,27 +91,25 @@ function Groups() {
       end_date: values.end_date,
     };
 
-    if (editData) {
-      const res = await GroupService.editGroup(editData.id, cleanedValues);
-      if (res?.status === 200) {
-        message.success("Guruh tahrirlandi");
+    try {
+      if (editData) {
+        const res = await GroupService.editGroup(editData.id, payload);
+        if (res?.status === 200) {
+          message.success("Guruh tahrirlandi");
+        }
       } else {
-        message.error("Tahrirlashda xatolik");
+        const res = await GroupService.createGroup(payload);
+        if (res?.status === 201 || res?.status === 200) {
+          message.success("Guruh yaratildi");
+        }
       }
-    } else {
-      const res = await GroupService.createGroup(cleanedValues);
-      if (res?.status === 201 || res?.status === 200) {
-        message.success("Guruh yaratildi");
-      } else {
-        message.error("Yaratishda xatolik");
-      }
+      fetchGroups(pagination.current!, pagination.pageSize!);
+      setIsModalOpen(false);
+      setEditData(null);
+    } catch {
+      message.error("Yaratishda yoki tahrirlashda xatolik");
     }
-
-    fetchGroups(pagination.current!, pagination.pageSize!);
-    setIsModalOpen(false);
-    setEditData(null);
   };
-  
 
   const columns: ColumnsType<GroupWithId> = [
     { title: "Nomi", dataIndex: "name", key: "name" },
@@ -109,7 +131,7 @@ function Groups() {
               setIsModalOpen(true);
             }}
           >
-            Edit
+            Tahrirlash
           </Button>
         </div>
       ),
@@ -122,11 +144,10 @@ function Groups() {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "16px",
+          marginBottom: 16,
         }}
       >
-        <h2 style={{ margin: 0 }}>Guruhlar</h2>
+        <h2>Guruhlar</h2>
         <Button
           type="primary"
           onClick={() => {
@@ -134,7 +155,7 @@ function Groups() {
             setIsModalOpen(true);
           }}
         >
-          + Add Group
+          + Guruh qo‘shish
         </Button>
       </div>
 
@@ -154,7 +175,8 @@ function Groups() {
           setEditData(null);
         }}
         onSubmit={handleSubmit}
-        editData={editData ?? undefined} // ❗️Bu qatordan `editData` propni uzatyapmiz
+        editData={editData ?? undefined}
+        courses={courses}
       />
     </div>
   );
