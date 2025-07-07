@@ -53,8 +53,8 @@ function Groups() {
       const res = await CourseService.getCourses();
       console.log(res);
       
-      if (res && res.data && res.data.data) {
-        setCourses(res.data.data);
+      if (res && res.data && res.data.courses) {
+        setCourses(res.data.courses);
       } else {
         setCourses([]);
       }
