@@ -1,10 +1,11 @@
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { authService } from "../../service/auth.service";
+// import { authService } from "../../service/auth.service";
 import { Card, Input, Button, Select } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { setItem } from "../../helpers";
+import { useAuth } from "../../hooks";
 
 const { Option } = Select;
 
@@ -26,6 +27,7 @@ const validationSchema = Yup.object({
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
+  const { mutate,isPending } = useAuth();
   const initialValues: SignInFormValues = {
     email: "",
     password: "",
@@ -34,12 +36,19 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = async (values: SignInFormValues) => {
     const { email, password, role } = values;
-    const res = await authService.signIn({ email, password }, role);
-    if (res?.status === 201) {
-      setItem("access_token",res.data.access_token)
-      setItem("role",role)
-      navigate(`/${role}`);
-    }
+    const payload = { email, password };
+    mutate(
+      { data: payload, role },
+      {
+        onSuccess: (res: any) => {
+          if (res?.status === 201) {
+            setItem("access_token", res.data.access_token);
+            setItem("role", role);
+            navigate(`/${role}`);
+          }
+        },
+      }
+    );
   };
 
   return (
@@ -115,7 +124,7 @@ const SignIn: React.FC = () => {
                 />
               </div>
 
-              <Button type="primary" htmlType="submit" block>
+              <Button type="primary" htmlType="submit" loading={isPending} block>
                 Kirish
               </Button>
             </Form>

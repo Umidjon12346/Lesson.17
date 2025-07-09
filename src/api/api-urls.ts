@@ -1,7 +1,9 @@
-export class ApiUrls{
-    public static LOGIN:string="/log-in"
+export class ApiUrls {
+  public static LOGIN: string = "/log-in";
 
-    public static Groups:string="/group"
+  public static Groups: string = "/group";
 
-    public static Course:string = "/courses"
+  public static Course: string = "/courses";
+
+  public static STUDENT: string = "/student";
 }

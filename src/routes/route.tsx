@@ -6,7 +6,16 @@ import {
 } from "react-router-dom";
 
 import { lazy } from "react";
-import { SignIn, SignUp,StudentLayout,TeacherLayout,AdminLayout,Groups } from "../pages";
+import {
+  SignIn,
+  SignUp,
+  StudentLayout,
+  TeacherLayout,
+  AdminLayout,
+  Groups,
+  LayoutProtect,
+  LoginProtect,
+} from "../pages";
 
 const App = lazy(() => import("../App"));
 
@@ -14,24 +23,33 @@ function Router() {
   const route = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<App />}>
-        <Route index element={<SignIn />} />
+        <Route
+          index
+          element={
+            <LoginProtect>
+              <SignIn />
+            </LoginProtect>
+          }
+        />
         <Route path="sign-up" element={<SignUp />} />
-        
 
-        <Route path="admin" element={<AdminLayout/>} >
-          <Route path="groups" index element={<Groups/>}/>
+        <Route
+          path="admin"
+          element={
+            <LayoutProtect>
+              <AdminLayout />
+            </LayoutProtect>
+          }
+        >
+          <Route path="groups" index element={<Groups />} />
+          <Route path="students" index element={<StudentLayout />} />
         </Route>
 
         {/* STUDENT */}
-        <Route path="student" element={<StudentLayout/>} >
-
-        </Route>
+        <Route path="student" element={<StudentLayout />}></Route>
 
         {/* TEACHER */}
-        <Route path="teacher" element={<TeacherLayout/>} >
-
-        </Route>
-
+        <Route path="teacher" element={<TeacherLayout />}></Route>
       </Route>
     )
   );

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Table, message } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { GroupService } from "../../service/groups.service";
-import { CourseService } from "../../service/course.service"
+import { CourseService } from "../../service/course.service";
 import type { Group } from "../../types/group";
 import GroupModal from "./modal";
 
@@ -52,7 +52,7 @@ function Groups() {
     try {
       const res = await CourseService.getCourses();
       console.log(res);
-      
+
       if (res && res.data && res.data.courses) {
         setCourses(res.data.courses);
       } else {
