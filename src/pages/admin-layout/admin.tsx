@@ -8,7 +8,7 @@ const { Header, Content, Footer, Sider } = Layout;
 const items = [
   { label: "Groups", key: "/admin/groups", icon: <TeamOutlined /> },
   { label: "Students", key: "/admin/students", icon: <UserOutlined /> },
-  { label: "Posts", key: "/admin/posts", icon: <UserOutlined /> },
+  { label: "Course", key: "/admin/courses", icon: <UserOutlined /> },
   { label: "Products", key: "/admin/products", icon: <TeamOutlined /> },
 ];
 
