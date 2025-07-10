@@ -21,7 +21,7 @@ export const StudentService = {
     return res;
   },
   async deleteStudent(id: number) {
-    const res = await apiConfig().deleteRequest(`${ApiUrls.STUDENT}/${id}}`);
+    const res = await apiConfig().deleteRequest(`${ApiUrls.STUDENT}/${id}`);
     return res;
   },
 };

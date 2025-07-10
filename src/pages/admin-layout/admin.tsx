@@ -9,7 +9,8 @@ const items = [
   { label: "Groups", key: "/admin/groups", icon: <TeamOutlined /> },
   { label: "Students", key: "/admin/students", icon: <UserOutlined /> },
   { label: "Course", key: "/admin/courses", icon: <UserOutlined /> },
-  { label: "Products", key: "/admin/products", icon: <TeamOutlined /> },
+  { label: "Teachers", key: "/admin/teacher", icon: <TeamOutlined /> },
+  { label: "Branchs", key: "/admin/branch", icon: <TeamOutlined /> },
 ];
 
 function Admin() {
@@ -21,7 +22,7 @@ function Admin() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  // ✅ Redirect to /admin/groups if path is exactly /admin
+  
   useEffect(() => {
     if (location.pathname === "/admin") {
       navigate("/admin/groups");

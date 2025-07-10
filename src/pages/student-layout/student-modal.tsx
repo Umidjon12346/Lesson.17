@@ -1,21 +1,19 @@
 import React from "react";
-import { Modal, Input, Form as AntForm, Button, DatePicker, InputNumber } from "antd";
+import {
+  Modal,
+  Input,
+  Form as AntForm,
+  Button,
+  DatePicker,
+  InputNumber,
+  Select,
+} from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import dayjs from "dayjs";
+import type { Student } from "../../types/student";
 
-export interface Student {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  password_hash: string;
-  gender: string;
-  date_of_birth: string;
-  lidId: number;
-  eventsId: number;
-  groupsId: number;
-}
+
 
 interface StudentModalProps {
   visible: boolean;
@@ -24,26 +22,28 @@ interface StudentModalProps {
   editData?: Student;
 }
 
-const validationSchema = Yup.object({
-  first_name: Yup.string().required("Ism majburiy"),
-  last_name: Yup.string().required("Familiya majburiy"),
-  email: Yup.string()
-    .email("Email manzili noto‘g‘ri formatda")
-    .required("Email majburiy"),
-  phone: Yup.string().required("Telefon majburiy"),
-  password_hash: Yup.string()
-    .min(8, "Parol kamida 8 ta belgidan iborat bo‘lishi kerak")
-    .required("Parol majburiy"),
-  gender: Yup.string().required("Jins majburiy"),
-  date_of_birth: Yup.string().required("Tug‘ilgan sana majburiy"),
-  lidId: Yup.number().required("Lid ID majburiy"),
-  eventsId: Yup.number()
-    .required("Voqea ID majburiy")
-    .typeError("Son bo'lishi kerak"),
-  groupsId: Yup.number()
-    .required("Guruh ID majburiy")
-    .typeError("Son bo'lishi kerak"),
-});
+const createValidationSchema = (isEdit: boolean) =>
+  Yup.object({
+    first_name: Yup.string().required("Ism majburiy"),
+    last_name: Yup.string().required("Familiya majburiy"),
+    email: Yup.string()
+      .email("Email manzili noto‘g‘ri formatda")
+      .required("Email majburiy"),
+    phone: Yup.string().required("Telefon majburiy"),
+    gender: Yup.string().required("Jins majburiy"),
+    date_of_birth: Yup.string().required("Tug‘ilgan sana majburiy"),
+    lidId: Yup.number().required("Lid ID majburiy"),
+    ...(isEdit
+      ? {}
+      : {
+          password_hash: Yup.string()
+            .min(8, "Parol kamida 8 ta belgidan iborat bo‘lishi kerak")
+            .required("Parol majburiy"),
+          confirm_password: Yup.string()
+            .oneOf([Yup.ref("password_hash")], "Parollar mos emas")
+            .required("Parolni tasdiqlash majburiy"),
+        }),
+  });
 
 const StudentModal: React.FC<StudentModalProps> = ({
   visible,
@@ -51,22 +51,23 @@ const StudentModal: React.FC<StudentModalProps> = ({
   onSubmit,
   editData,
 }) => {
-  const initialValues: Student = editData || {
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
+  const isEdit = !!editData;
+
+  const initialValues: Student = {
+    first_name: editData?.first_name || "",
+    last_name: editData?.last_name || "",
+    email: editData?.email || "",
+    phone: editData?.phone || "",
     password_hash: "",
-    gender: "",
-    date_of_birth: "",
-    lidId: 0,
-    eventsId: 0,
-    groupsId: 0,
+    confirm_password: "",
+    gender: editData?.gender || "",
+    date_of_birth: editData?.date_of_birth || "",
+    lidId: editData?.lidId || 0,
   };
 
   return (
     <Modal
-      title={editData ? "Talabani tahrirlash" : "Talaba qo‘shish"}
+      title={isEdit ? "Talabani tahrirlash" : "Talaba qo‘shish"}
       open={visible}
       onCancel={onClose}
       footer={null}
@@ -75,59 +76,85 @@ const StudentModal: React.FC<StudentModalProps> = ({
       <Formik
         enableReinitialize
         initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
+        validationSchema={createValidationSchema(isEdit)}
+        onSubmit={(values) => {
+          const { confirm_password, ...data } = values;
+          return onSubmit(data as Student);
+        }}
       >
         {({ setFieldValue, values }) => (
           <Form>
             <AntForm.Item label="Ism">
               <Field as={Input} name="first_name" placeholder="Ism" />
               <div style={{ color: "red" }}>
-                <ErrorMessage name="first_name" component="div" />
+                <ErrorMessage name="first_name" />
               </div>
             </AntForm.Item>
 
             <AntForm.Item label="Familiya">
               <Field as={Input} name="last_name" placeholder="Familiya" />
               <div style={{ color: "red" }}>
-                <ErrorMessage name="last_name" component="div" />
+                <ErrorMessage name="last_name" />
               </div>
             </AntForm.Item>
 
             <AntForm.Item label="Email">
               <Field as={Input} name="email" placeholder="Email" />
               <div style={{ color: "red" }}>
-                <ErrorMessage name="email" component="div" />
+                <ErrorMessage name="email" />
               </div>
             </AntForm.Item>
 
             <AntForm.Item label="Telefon">
               <Field as={Input} name="phone" placeholder="Telefon raqami" />
               <div style={{ color: "red" }}>
-                <ErrorMessage name="phone" component="div" />
+                <ErrorMessage name="phone" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Parol">
-              <Field
-                as={Input.Password}
-                name="password_hash"
-                placeholder="Parol"
-                
-              />
-              <div style={{ color: "red" }}>
-                <ErrorMessage name="password_hash" component="div" />
-              </div>
-            </AntForm.Item>
+            {!isEdit && (
+              <>
+                <AntForm.Item label="Parol">
+                  <Field
+                    as={Input.Password}
+                    name="password_hash"
+                    placeholder="Parol"
+                  />
+                  <div style={{ color: "red" }}>
+                    <ErrorMessage name="password_hash" />
+                  </div>
+                </AntForm.Item>
+
+                <AntForm.Item label="Parolni tasdiqlang">
+                  <Field
+                    as={Input.Password}
+                    name="confirm_password"
+                    placeholder="Parolni qayta kiriting"
+                  />
+                  <div style={{ color: "red" }}>
+                    <ErrorMessage name="confirm_password" />
+                  </div>
+                </AntForm.Item>
+              </>
+            )}
 
             <AntForm.Item label="Jinsi">
-              <Field
-                as={Input}
-                name="gender"
-                placeholder="Jins (masalan: erkak/ayol)"
-              />
+              <Field name="gender">
+                {({ field }: any) => (
+                  <Select
+                    {...field}
+                    value={field.value}
+                    onChange={(value) => setFieldValue("gender", value)}
+                    style={{ width: "100%" }}
+                    placeholder="Jinsni tanlang"
+                  >
+                    <Select.Option value="male">Erkak</Select.Option>
+                    <Select.Option value="female">Ayol</Select.Option>
+                  </Select>
+                )}
+              </Field>
               <div style={{ color: "red" }}>
-                <ErrorMessage name="gender" component="div" />
+                <ErrorMessage name="gender" />
               </div>
             </AntForm.Item>
 
@@ -143,7 +170,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
                 style={{ width: "100%" }}
               />
               <div style={{ color: "red" }}>
-                <ErrorMessage name="date_of_birth" component="div" />
+                <ErrorMessage name="date_of_birth" />
               </div>
             </AntForm.Item>
 
@@ -160,41 +187,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
                 )}
               </Field>
               <div style={{ color: "red" }}>
-                <ErrorMessage name="lidId" component="div" />
-              </div>
-            </AntForm.Item>
-
-            <AntForm.Item label="Voqea ID">
-              <Field name="eventsId">
-                {({ field }: any) => (
-                  <InputNumber
-                    {...field}
-                    value={values.eventsId}
-                    onChange={(val) => setFieldValue("eventsId", val)}
-                    style={{ width: "100%" }}
-                    min={0}
-                  />
-                )}
-              </Field>
-              <div style={{ color: "red" }}>
-                <ErrorMessage name="eventsId" component="div" />
-              </div>
-            </AntForm.Item>
-
-            <AntForm.Item label="Guruh ID">
-              <Field name="groupsId">
-                {({ field }: any) => (
-                  <InputNumber
-                    {...field}
-                    value={values.groupsId}
-                    onChange={(val) => setFieldValue("groupsId", val)}
-                    style={{ width: "100%" }}
-                    min={0}
-                  />
-                )}
-              </Field>
-              <div style={{ color: "red" }}>
-                <ErrorMessage name="groupsId" component="div" />
+                <ErrorMessage name="lidId" />
               </div>
             </AntForm.Item>
 

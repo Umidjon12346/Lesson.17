@@ -9,6 +9,9 @@ const Groups = lazy(()=>import("./groups/groups"))
 const LayoutProtect = lazy(()=>import("./protect-routes/layout-protect"))
 const LoginProtect = lazy(()=>import("./protect-routes/login-protect"))
 const CourseLayout = lazy(()=>import("./course-layout/course"))
+const BranchLayout = lazy(()=>import("./branch/branch"))
+const Worker = lazy(()=>import("./worker/worker"))
+
 
 export {
   SignIn,
@@ -20,4 +23,6 @@ export {
   LayoutProtect,
   LoginProtect,
   CourseLayout,
+  Worker,
+  BranchLayout,
 };

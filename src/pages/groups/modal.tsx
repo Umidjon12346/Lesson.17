@@ -10,16 +10,10 @@ import {
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import dayjs from "dayjs";
+import type { Group } from "../../types/group";
 
 const { Option } = Select;
 
-export interface Group {
-  name: string;
-  course_id: number;
-  status: string;
-  start_date: string;
-  end_date: string;
-}
 
 interface Course {
   id: number;

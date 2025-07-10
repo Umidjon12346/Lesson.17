@@ -5,7 +5,6 @@ import { StudentService } from "../../service/student.service";
 import StudentModal from "./student-modal";
 import type { Student } from "../../types/student";
 
-
 function Student() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(false);
@@ -21,7 +20,7 @@ function Student() {
     setLoading(true);
     try {
       const res = await StudentService.getStudents();
-      
+
       if (res?.data?.students) {
         setStudents(res.data.students);
         setPagination({
@@ -64,8 +63,6 @@ function Student() {
         }
       } else {
         const res = await StudentService.createStudent(values);
-        console.log(res);
-        
         if (res?.status === 201 || res?.status === 200) {
           message.success("Talaba yaratildi");
         }
@@ -77,6 +74,7 @@ function Student() {
       message.error("Saqlashda xatolik yuz berdi");
     }
   };
+  
 
   const columns: ColumnsType<Student> = [
     { title: "Ism", dataIndex: "first_name", key: "first_name" },
@@ -157,8 +155,10 @@ function Student() {
           setIsModalOpen(false);
           setEditData(null);
         }}
-        onSubmit={handleSubmit}
-        // onSubmit: (values: Student) => Promise<void>;
+        onSubmit={async (values) => {
+          const { confirm_password,password_hash, ...studentData } = values;
+          await handleSubmit(studentData as Student);
+        }}
         editData={editData ?? undefined}
       />
     </div>

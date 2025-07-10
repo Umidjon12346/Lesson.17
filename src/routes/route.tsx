@@ -16,6 +16,7 @@ import {
   LayoutProtect,
   LoginProtect,
   CourseLayout,
+  BranchLayout,
 } from "../pages";
 
 const App = lazy(() => import("../App"));
@@ -45,6 +46,8 @@ function Router() {
           <Route path="groups" element={<Groups />} />
           <Route path="students" element={<StudentLayout />} />
           <Route path="courses" element={<CourseLayout />} />
+          <Route path="teacher" element={<TeacherLayout />} />
+          <Route path="branch" element={<BranchLayout />} />
         </Route>
 
         {/* STUDENT */}
