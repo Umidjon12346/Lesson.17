@@ -5,6 +5,9 @@ import { GroupService } from "../../service/groups.service";
 import { CourseService } from "../../service/course.service";
 import type { Group } from "../../types/group";
 import GroupModal from "./modal";
+import { PopConfirm } from "../../components";
+import { useLocation } from "react-router-dom";
+import { useGeneral, useGroup } from "../../hooks";
 
 interface GroupWithId extends Group {
   id: number;
@@ -18,35 +21,33 @@ interface Course {
 }
 
 function Groups() {
-  const [groups, setGroups] = useState<GroupWithId[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 5,
-    total: 0,
+  const { handleTableChange } = useGeneral();
+  const location = useLocation();
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 5,
   });
+  const { data, useDeleteGroup } = useGroup(params );
+  const { mutate: deleteGroup } = useDeleteGroup();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<GroupWithId | null>(null);
 
-  const fetchGroups = async (page: number, pageSize: number) => {
-    setLoading(true);
-    try {
-      const response = await GroupService.getGroups();
-      if (response?.data?.data) {
-        setGroups(response.data.data);
-        setPagination({
-          ...pagination,
-          current: page,
-          pageSize,
-          total: response.data.data.length,
-        });
-      }
-    } catch {
-      message.error("Ma'lumotlarni yuklashda xatolik yuz berdi");
+  
+  
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = searchParams.get("page");
+    const limit = searchParams.get("limit");
+    if (page && limit) {
+      setParams(() => ({
+        page: Number(page),
+        limit: Number(limit),
+      }));
     }
-    setLoading(false);
-  };
+  }, [location.search]);
+
 
   const fetchCourses = async () => {
     try {
@@ -62,24 +63,16 @@ function Groups() {
       message.error("Kurslarni yuklashda xatolik");
     }
   };
-
   useEffect(() => {
-    fetchGroups(pagination.current!, pagination.pageSize!);
     fetchCourses();
   }, []);
 
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    fetchGroups(pagination.current!, pagination.pageSize!);
+  const onTableChange = (pagination: TablePaginationConfig) => {
+    handleTableChange({ pagination, setParams });
   };
 
   const handleDelete = async (id: number) => {
-    try {
-      await GroupService.deleteGroup(id);
-      message.success("Guruh o‘chirildi");
-      fetchGroups(pagination.current!, pagination.pageSize!);
-    } catch {
-      message.error("O‘chirishda xatolik yuz berdi");
-    }
+    deleteGroup({ id });
   };
 
   const handleSubmit = async (values: Group) => {
@@ -103,7 +96,7 @@ function Groups() {
           message.success("Guruh yaratildi");
         }
       }
-      fetchGroups(pagination.current!, pagination.pageSize!);
+
       setIsModalOpen(false);
       setEditData(null);
     } catch {
@@ -111,7 +104,8 @@ function Groups() {
     }
   };
 
-  const columns: ColumnsType<GroupWithId> = [
+
+  const columns: ColumnsType<Group> = [
     { title: "Nomi", dataIndex: "name", key: "name" },
     { title: "Status", dataIndex: "status", key: "status" },
     { title: "Kurs ID", dataIndex: "course_id", key: "course_id" },
@@ -120,11 +114,9 @@ function Groups() {
     {
       title: "Amallar",
       key: "actions",
-      render: (_, record) => (
+      render: (_, record: any) => (
         <div style={{ display: "flex", gap: 8 }}>
-          <Button danger onClick={() => handleDelete(record.id)}>
-            O‘chirish
-          </Button>
+          <PopConfirm onDelete={() => handleDelete(record.id)} />
           <Button
             onClick={() => {
               setEditData(record);
@@ -159,13 +151,19 @@ function Groups() {
         </Button>
       </div>
 
-      <Table
+      <Table<Group>
         columns={columns}
-        dataSource={groups}
+        dataSource={data?.data.data}
         loading={loading}
-        rowKey={(record) => record.id}
-        pagination={pagination}
-        onChange={handleTableChange}
+        rowKey={(record) => record.id ?? `${record.name}-${record.course_id}`}
+        pagination={{
+          current: params.page,
+          pageSize: params.limit,
+          total: data?.data?.total,
+          showSizeChanger:true,
+          pageSizeOptions:["4","5","7","10"]
+        }}
+        onChange={onTableChange}
       />
 
       <GroupModal

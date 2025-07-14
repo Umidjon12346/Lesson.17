@@ -4,6 +4,7 @@ import { Button, message, Table } from "antd";
 import type { ColumnType, TablePaginationConfig } from "antd/es/table";
 import { useEffect, useState } from "react";
 import BranchModal from "./branch-modal";
+import { PopConfirm } from "../../components";
 
 interface BranchWithId extends Branch {
   id: number;
@@ -15,7 +16,6 @@ const Branch = () => {
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 10,
-    total: 10,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<BranchWithId | null>(null);
@@ -101,16 +101,7 @@ const Branch = () => {
           >
             Edit
           </Button>
-          <Button
-            danger
-            onClick={() => {
-              if (window.confirm("Are you sure?")) {
-                handleDelete(record.id);
-              }
-            }}
-          >
-            Delete
-          </Button>
+          <PopConfirm onDelete={() => handleDelete(record.id)} />
         </div>
       ),
     },

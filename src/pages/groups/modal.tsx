@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   Input,
@@ -7,13 +7,13 @@ import {
   Form as AntForm,
   Button,
 } from "antd";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import dayjs from "dayjs";
 import type { Group } from "../../types/group";
 
 const { Option } = Select;
-
 
 interface Course {
   id: number;
@@ -43,13 +43,37 @@ const GroupModal: React.FC<GroupModalProps> = ({
   editData,
   courses,
 }) => {
-  const initialValues: Group = editData || {
-    name: "",
-    course_id: 0,
-    status: "",
-    start_date: "",
-    end_date: "",
-  };
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Group>({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      id: 0,
+      name: "",
+      course_id: 0,
+      status: "",
+      start_date: "",
+      end_date: "",
+    },
+  });
+
+  useEffect(() => {
+    if (editData) {
+      reset(editData);
+    } else {
+      reset({
+        id: 0,
+        name: "",
+        course_id: 0,
+        status: "",
+        start_date: "",
+        end_date: "",
+      });
+    }
+  }, [editData, reset]);
 
   return (
     <Modal
@@ -58,25 +82,35 @@ const GroupModal: React.FC<GroupModalProps> = ({
       onCancel={onClose}
       footer={null}
     >
-      <Formik
-        enableReinitialize
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        {({ setFieldValue, values }) => (
-          <Form>
-            <AntForm.Item label="Guruh nomi">
-              <Field as={Input} name="name" placeholder="Guruh nomi" />
-              <ErrorMessage name="name" component="div" />
-            </AntForm.Item>
+      <AntForm layout="vertical" onFinish={handleSubmit(onSubmit)}>
+        <AntForm.Item
+          label="Guruh nomi"
+          validateStatus={errors.name ? "error" : ""}
+          help={errors.name?.message}
+        >
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <Input {...field} placeholder="Guruh nomi" />
+            )}
+          />
+        </AntForm.Item>
 
-            <AntForm.Item label="Kurs">
+        <AntForm.Item
+          label="Kurs"
+          validateStatus={errors.course_id ? "error" : ""}
+          help={errors.course_id?.message}
+        >
+          <Controller
+            name="course_id"
+            control={control}
+            render={({ field }) => (
               <Select
-                value={values.course_id || undefined}
-                onChange={(value) => setFieldValue("course_id", value)}
+                {...field}
                 placeholder="Kursni tanlang"
-                style={{ width: "100%" }}
+                value={field.value || undefined}
+                onChange={(value) => field.onChange(value)}
               >
                 {courses.map((course) => (
                   <Option key={course.id} value={course.id}>
@@ -84,49 +118,72 @@ const GroupModal: React.FC<GroupModalProps> = ({
                   </Option>
                 ))}
               </Select>
-              <ErrorMessage name="course_id" component="div" />
-            </AntForm.Item>
+            )}
+          />
+        </AntForm.Item>
 
-            <AntForm.Item label="Holat">
+        <AntForm.Item
+          label="Holat"
+          validateStatus={errors.status ? "error" : ""}
+          help={errors.status?.message}
+        >
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
               <Select
-                value={values.status || undefined}
-                onChange={(value) => setFieldValue("status", value)}
+                {...field}
                 placeholder="Holatni tanlang"
+                value={field.value || undefined}
+                onChange={(value) => field.onChange(value)}
               >
                 <Option value="active">Active</Option>
                 <Option value="new">New</Option>
               </Select>
-              <ErrorMessage name="status" component="div" />
-            </AntForm.Item>
+            )}
+          />
+        </AntForm.Item>
 
-            <AntForm.Item label="Boshlanish sanasi">
+        <AntForm.Item
+          label="Boshlanish sanasi"
+          validateStatus={errors.start_date ? "error" : ""}
+          help={errors.start_date?.message}
+        >
+          <Controller
+            name="start_date"
+            control={control}
+            render={({ field }) => (
               <DatePicker
                 style={{ width: "100%" }}
-                value={values.start_date ? dayjs(values.start_date) : undefined}
-                onChange={(_, dateString) =>
-                  setFieldValue("start_date", dateString)
-                }
+                value={field.value ? dayjs(field.value) : undefined}
+                onChange={(_, dateString) => field.onChange(dateString)}
               />
-              <ErrorMessage name="start_date" component="div" />
-            </AntForm.Item>
+            )}
+          />
+        </AntForm.Item>
 
-            <AntForm.Item label="Tugash sanasi">
+        <AntForm.Item
+          label="Tugash sanasi"
+          validateStatus={errors.end_date ? "error" : ""}
+          help={errors.end_date?.message}
+        >
+          <Controller
+            name="end_date"
+            control={control}
+            render={({ field }) => (
               <DatePicker
                 style={{ width: "100%" }}
-                value={values.end_date ? dayjs(values.end_date) : undefined}
-                onChange={(_, dateString) =>
-                  setFieldValue("end_date", dateString)
-                }
+                value={field.value ? dayjs(field.value) : undefined}
+                onChange={(_, dateString) => field.onChange(dateString)}
               />
-              <ErrorMessage name="end_date" component="div" />
-            </AntForm.Item>
+            )}
+          />
+        </AntForm.Item>
 
-            <Button type="primary" htmlType="submit" block>
-              Saqlash
-            </Button>
-          </Form>
-        )}
-      </Formik>
+        <Button type="primary" htmlType="submit" block>
+          Saqlash
+        </Button>
+      </AntForm>
     </Modal>
   );
 };

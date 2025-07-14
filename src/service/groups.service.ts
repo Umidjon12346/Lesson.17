@@ -3,8 +3,8 @@ import { apiConfig } from "../api/config";
 import type { Group } from "../types/group";
 
 export const GroupService = {
-  async getGroups() {
-    const res = await apiConfig().getRequest(ApiUrls.Groups);
+  async getGroups(params:any) {
+    const res = await apiConfig().getRequest(ApiUrls.Groups,params);
     return res;
   },
 

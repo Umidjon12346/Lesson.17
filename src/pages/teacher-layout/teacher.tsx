@@ -7,6 +7,7 @@ import { TeacherService } from "../../service/teacher.service";
 import TeacherModal from "./teacher-modal";
 import type { Branch } from "../../types/branch";
 import { BranchService } from "../../service/branch.service";
+import { PopConfirm } from "../../components";
 
 function TeacherPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -58,7 +59,6 @@ function TeacherPage() {
       message.error("Filiallarni yuklashda xatolik");
     }
   };
-  
 
   useEffect(() => {
     fetchTeachers();
@@ -83,14 +83,12 @@ function TeacherPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("O‘chirishga ishonchingiz komilmi?")) {
-      try {
-        await TeacherService.deleteTeacher(id);
-        message.success("O‘qituvchi o‘chirildi");
-        fetchTeachers();
-      } catch {
-        message.error("O‘chirishda xatolik yuz berdi");
-      }
+    try {
+      await TeacherService.deleteTeacher(id);
+      message.success("O‘qituvchi o‘chirildi");
+      fetchTeachers();
+    } catch {
+      message.error("O‘chirishda xatolik yuz berdi");
     }
   };
 
@@ -125,9 +123,7 @@ function TeacherPage() {
           >
             Tahrirlash
           </Button>
-          <Button danger onClick={() => record.id && handleDelete(record.id)}>
-            O‘chirish
-          </Button>
+          <PopConfirm onDelete={() => handleDelete(record.id!)} />
         </div>
       ),
     },

@@ -4,6 +4,7 @@ import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { Course } from "../../types/course";
 import { CourseService } from "../../service/course.service";
 import Coursesmodal from "./course-modal";
+import { PopConfirm } from "../../components";
 
 interface CourseWithId extends Course {
   id: number;
@@ -115,18 +116,7 @@ function Courses() {
           >
             Edit
           </Button>
-          <Button
-            danger
-            onClick={() => {
-              if (
-                window.confirm("Are you sure you want to delete this course?")
-              ) {
-                handleDelete(record.id);
-              }
-            }}
-          >
-            Delete
-          </Button>
+          <PopConfirm onDelete={()=>handleDelete(record.id)}/>
         </div>
       ),
     },

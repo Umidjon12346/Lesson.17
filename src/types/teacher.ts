@@ -1,5 +1,5 @@
 export interface Teacher {
-  id?: number; // edit uchun kerak
+  id?: number;
   first_name: string;
   last_name: string;
   email: string;
