@@ -64,10 +64,7 @@ function Rooms() {
           <Button type="primary" onClick={() => editItem(record)}>
             <EditOutlined />
           </Button>
-          <PopConfirm
-            onConfirm={() => deleteItem(record.id!)}
-            loading={isDeleting}
-          />
+          
         </Space>
       ),
     },
