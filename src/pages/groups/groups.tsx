@@ -6,7 +6,7 @@ import GroupModal from "./modal";
 import { PopConfirm } from "../../components";
 import {  Link, useLocation } from "react-router-dom";
 import { useGeneral, useGroup } from "../../hooks";
-import {EditOutlined} from "@ant-design/icons";
+import {EditOutlined, EyeOutlined} from "@ant-design/icons";
 
 interface GroupWithId extends Group {
   id: number;
@@ -71,7 +71,9 @@ function Groups() {
           >
             <EditOutlined />
           </Button>
-          <Link to={`${record.id}`}>view</Link>
+          <Link to={`${record.id}`}>
+            <EyeOutlined />
+          </Link>
         </div>
       ),
     },
