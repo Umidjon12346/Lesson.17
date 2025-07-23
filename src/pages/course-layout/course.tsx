@@ -39,7 +39,8 @@ function Courses() {
   const { data, useDeleteCourse } = useCourse(params);
   const { mutate: deleteCourse } = useDeleteCourse();
 
-
+  console.log(data);
+  
 
   const handleDelete = async (id: number) => {
     deleteCourse( id );

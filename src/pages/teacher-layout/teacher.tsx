@@ -10,7 +10,7 @@ import { useGeneral, useTeachers } from "../../hooks";
 import { useBranches } from "../../hooks/useBranches";
 
 function TeacherPage() {
-  const [loading,] = useState(false);
+  const [loading] = useState(false);
   const { handleTableChanges } = useGeneral();
   const location = useLocation();
   const [params, setParams] = useState({
@@ -24,6 +24,7 @@ function TeacherPage() {
   const branches = branchData?.data.branch;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<Teacher | null>(null);
+  console.log(teachersData);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -42,7 +43,7 @@ function TeacherPage() {
   };
 
   const handleDelete = async (id: number) => {
-    deleteTeacher( id );
+    deleteTeacher(id);
   };
 
   const columns: ColumnsType<Teacher> = [
@@ -53,15 +54,11 @@ function TeacherPage() {
     { title: "Role", dataIndex: "role", key: "role" },
     {
       title: "Branches",
-      dataIndex: "branchId",
-      key: "branchId",
-      render: (branchId?: number[]) => {
-        if (!Array.isArray(branchId)) return "—";
-        const branchNames = branchId
-          .map((id) => branches?.find((b: { id: number }) => b.id === id)?.name)
-          .filter(Boolean);
-        return branchNames.length > 0 ? branchNames.join(", ") : "—";
-      },
+      key: "branches",
+      render: (_, record: any) =>
+        record.branches?.length
+          ? record.branches.map((b: any) => b.name).join(", ")
+          : "-",
     },
     {
       title: "Actions",

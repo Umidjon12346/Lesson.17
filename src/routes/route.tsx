@@ -17,6 +17,7 @@ import {
   LoginProtect,
   CourseLayout,
   BranchLayout,
+  RoomLayout,
   SingleGroup,
   NotFound,
 } from "../pages";
@@ -51,6 +52,7 @@ function Router() {
           <Route path="courses" element={<CourseLayout />} />
           <Route path="teacher" element={<TeacherLayout />} />
           <Route path="branch" element={<BranchLayout />} />
+          <Route path="rooms" element={<RoomLayout />} />
         </Route>
 
         {/* STUDENT */}
@@ -59,7 +61,7 @@ function Router() {
         {/* TEACHER */}
         <Route path="teacher" element={<TeacherLayout />}></Route>
 
-        <Route path="*" element={<NotFound/>}/>
+        <Route path="*" element={<NotFound />} />
       </Route>
     )
   );

@@ -4,16 +4,15 @@ import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { Group } from "../../types/group";
 import GroupModal from "./modal";
 import { PopConfirm } from "../../components";
-import {  Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useGeneral, useGroup } from "../../hooks";
-import {EditOutlined, EyeOutlined} from "@ant-design/icons";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 interface GroupWithId extends Group {
   id: number;
   created_at?: string;
   updated_at?: string;
 }
-
 
 function Groups() {
   const [loading] = useState(false);
@@ -40,6 +39,7 @@ function Groups() {
     }
   }, [location.search]);
 
+  console.log(data);
 
   const onTableChange = (pagination: TablePaginationConfig) => {
     handleTableChanges({ pagination, setParams });
@@ -49,12 +49,14 @@ function Groups() {
     deleteGroup({ id });
   };
 
- 
-
   const columns: ColumnsType<Group> = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Course ID", dataIndex: "course_id", key: "course_id" },
+    {
+      title: "Course",
+      key: "title",
+      render: (_, record: any) => record.course?.title ?? "-",
+    },
     { title: "Start Date", dataIndex: "start_date", key: "start_date" },
     { title: "End Date", dataIndex: "end_date", key: "end_date" },
     {
@@ -112,6 +114,7 @@ function Groups() {
           total: data?.data?.total,
           showSizeChanger: true,
           pageSizeOptions: ["4", "5", "7", "10"],
+          showTotal: (total) => `Total ${total} groups`,
         }}
         onChange={onTableChange}
       />

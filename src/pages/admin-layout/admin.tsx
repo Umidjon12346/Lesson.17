@@ -23,7 +23,7 @@ const items = [
     icon: <TeamOutlined />,
   },
   {
-    label: "Course",
+    label: "Courses",
     key: "/admin/courses",
     icon: <BookOutlined />,
   },
@@ -35,6 +35,11 @@ const items = [
   {
     label: "Branchs",
     key: "/admin/branch",
+    icon: <HomeOutlined />,
+  },
+  {
+    label: "Rooms",
+    key: "/admin/rooms",
     icon: <HomeOutlined />,
   },
 ];
