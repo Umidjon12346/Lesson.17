@@ -75,7 +75,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
 
      const payload: any = {
        ...rest,
-       ...(isEdit ? {} : { password_hash }),
+       ...(isEdit ? {} : { password_hash,confirm_password }),
      };
 
      if (isEdit && editData?.id != null) {

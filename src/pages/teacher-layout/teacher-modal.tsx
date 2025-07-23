@@ -62,27 +62,33 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
   const { mutate: updatefn } = useTeacherUpdate();
 
   const handleSubmit = async (values: Teacher) => {
-    if (editData?.id) {
+    const { password, ...rest } = values;
+
+    const payload: any = {
+      ...rest,
+      ...(isEdit ? {} : { password }),
+    };
+    if (isEdit && editData?.id != null) {
       updatefn(
-        { id: editData.id, data: values },
+        { id: editData.id, data: payload },
         {
           onSuccess: () => {
-            message.success("Teacher updated successfully");
+            message.success("Teacher updated successfully.");
             onClose();
           },
           onError: () => {
-            message.error("Error while updating teacher");
+            message.error("Failed to update teacher.");
           },
         }
       );
     } else {
-      createfn(values, {
+      createfn(payload, {
         onSuccess: () => {
-          message.success("New teacher added");
+          message.success("Teacher created successfully.");
           onClose();
         },
         onError: () => {
-          message.error("Error while creating teacher");
+          message.error("Failed to create teacher.");
         },
       });
     }

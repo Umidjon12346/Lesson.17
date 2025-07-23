@@ -64,17 +64,16 @@ function Groups() {
       key: "actions",
       render: (_, record: any) => (
         <div style={{ display: "flex", gap: 8 }}>
-          <PopConfirm onDelete={() => handleDelete(record.id)} />
           <Button
             onClick={() => {
               setEditData(record);
               setIsModalOpen(true);
             }}
-          >
-            <EditOutlined />
-          </Button>
+            icon={<EditOutlined />}
+          />
+            <PopConfirm onDelete={() => handleDelete(record.id)} />
           <Link to={`${record.id}`}>
-            <EyeOutlined />
+            <Button icon={<EyeOutlined />} />
           </Link>
         </div>
       ),
