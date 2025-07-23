@@ -33,6 +33,9 @@ function Rooms() {
   const { data } = useRoom(params);
   const { handleTableChanges } = useGeneral();
 
+  console.log(data);
+  
+
 
   const editItem = (record: Room) => {
     setUpdate(record);

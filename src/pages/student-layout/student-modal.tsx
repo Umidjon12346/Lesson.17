@@ -123,21 +123,21 @@ const StudentModal: React.FC<StudentModalProps> = ({
       >
         {({ setFieldValue, values }) => (
           <Form>
-            <AntForm.Item label="First Name">
+            <AntForm.Item label="First Name" labelCol={{ span: 24 }}>
               <Field as={Input} name="first_name" placeholder="First name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="first_name" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Last Name">
+            <AntForm.Item label="Last Name" labelCol={{ span: 24 }}>
               <Field as={Input} name="last_name" placeholder="Last name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="last_name" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Email">
+            <AntForm.Item label="Email" labelCol={{ span: 24 }}>
               <Field as={Input} name="email" placeholder="Email" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="email" />
@@ -164,7 +164,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
 
             {!isEdit && (
               <>
-                <AntForm.Item label="Password">
+                <AntForm.Item label="Password" labelCol={{ span: 24 }}>
                   <Field
                     as={Input.Password}
                     name="password_hash"
@@ -175,7 +175,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
                   </div>
                 </AntForm.Item>
 
-                <AntForm.Item label="Confirm Password">
+                <AntForm.Item label="Confirm Password" labelCol={{ span: 24 }}>
                   <Field
                     as={Input.Password}
                     name="confirm_password"
@@ -188,7 +188,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
               </>
             )}
 
-            <AntForm.Item label="Gender">
+            <AntForm.Item label="Gender" labelCol={{ span: 24 }}>
               <Field name="gender">
                 {({ field }: any) => (
                   <Select
@@ -208,7 +208,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Date of Birth">
+            <AntForm.Item label="Date of Birth" labelCol={{ span: 24 }}>
               <DatePicker
                 format="YYYY-MM-DD"
                 value={
@@ -224,7 +224,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Lid ID">
+            <AntForm.Item label="Lid ID" labelCol={{ span: 24 }}>
               <Field name="lidId">
                 {({ field }: any) => (
                   <InputNumber

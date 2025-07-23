@@ -18,7 +18,7 @@ interface TeacherModalProps {
   branches: Branch[];
 }
 
-const roles = ["main teacher", "admin", "assistant"];
+const roles = ["main teacher", "assistant"];
 
 const validationSchema = (isEdit: boolean) =>
   Yup.object({
@@ -104,28 +104,28 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
       >
         {({ setFieldValue }) => (
           <Form>
-            <AntForm.Item label="First Name">
+            <AntForm.Item label="First Name" labelCol={{ span: 24 }}>
               <Field as={Input} name="first_name" placeholder="First name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="first_name" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Last Name">
+            <AntForm.Item label="Last Name" labelCol={{ span: 24 }}>
               <Field as={Input} name="last_name" placeholder="Last name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="last_name" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Email">
+            <AntForm.Item label="Email" labelCol={{ span: 24 }}>
               <Field as={Input} name="email" placeholder="Email" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="email" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Phone">
+            <AntForm.Item label="Phone" labelCol={{ span: 24 }}>
               <Field as={Input} name="phone" placeholder="Phone number" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="phone" />
@@ -133,7 +133,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
             </AntForm.Item>
 
             {!isEdit && (
-              <AntForm.Item label="Password">
+              <AntForm.Item label="Password" labelCol={{ span: 24 }}>
                 <Field
                   as={Input.Password}
                   name="password"
@@ -145,7 +145,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
               </AntForm.Item>
             )}
 
-            <AntForm.Item label="Role">
+            <AntForm.Item label="Role" labelCol={{ span: 24 }}>
               <Field name="role">
                 {({ field }: any) => (
                   <Select
@@ -168,7 +168,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Branch(es)">
+            <AntForm.Item label="Branch(es)" labelCol={{ span: 24 }}>
               <Field name="branchId">
                 {({ field }: any) => (
                   <Select
