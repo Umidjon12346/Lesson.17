@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import type { Teacher } from "../../types/teacher";
 import { useTeachers } from "../../hooks/useTeacher";
-
+import { MaskedInput } from "antd-mask-input";
 
 interface Branch {
   id: number | undefined;
@@ -57,9 +57,9 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
     branchId: editData?.branchId || [],
   };
 
-  const {useTeacherCreate,useTeacherUpdate}=useTeachers({})
-  const {mutate:createfn} = useTeacherCreate()
-  const {mutate:updatefn} = useTeacherUpdate()
+  const { useTeacherCreate, useTeacherUpdate } = useTeachers({});
+  const { mutate: createfn } = useTeacherCreate();
+  const { mutate: updatefn } = useTeacherUpdate();
 
   const handleSubmit = async (values: Teacher) => {
     if (editData?.id) {
@@ -87,7 +87,6 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
       });
     }
   };
-
 
   return (
     <Modal
@@ -126,7 +125,19 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
             </AntForm.Item>
 
             <AntForm.Item label="Phone" labelCol={{ span: 24 }}>
-              <Field as={Input} name="phone" placeholder="Phone number" />
+              <Field name="phone">
+                {({ field, form }: any) => (
+                  <MaskedInput
+                    {...field}
+                    value={field.value || ""}
+                    onChange={(e) =>
+                      form.setFieldValue("phone", e.target.value)
+                    }
+                    onBlur={field.onBlur}
+                    mask="+\9\9\8 (00) 000-00-00"
+                  />
+                )}
+              </Field>
               <div style={{ color: "red" }}>
                 <ErrorMessage name="phone" />
               </div>

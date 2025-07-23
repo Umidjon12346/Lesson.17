@@ -5,14 +5,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import type { Branch } from "../../types/branch";
 import { useBranches } from "../../hooks/useBranches";
 import { branchSchema } from "../../utility";
+import { MaskedInput } from "antd-mask-input";
 
 interface BranchModalProps {
   visible: boolean;
   onClose: () => void;
   editData?: Branch;
 }
-
-
 
 const BranchModal: React.FC<BranchModalProps> = ({
   visible,
@@ -47,33 +46,31 @@ const BranchModal: React.FC<BranchModalProps> = ({
     }
   }, [editData, reset]);
 
-  const {useBranchUpdate,useBranchCreate}=useBranches({})
-  const {mutate:updatefn} = useBranchUpdate()
-  const {mutate:createfn} = useBranchCreate()
+  const { useBranchUpdate, useBranchCreate } = useBranches({});
+  const { mutate: updatefn } = useBranchUpdate();
+  const { mutate: createfn } = useBranchCreate();
 
-   const handleSubmitt = async (values: Branch) => {
-     const payload = {
-       name: values.name,
-       address: values.address,
-       call_number: values.call_number,
-     };
-     try {
-       if (editData) {
-         updatefn({ data: payload, id: editData.id! }); // await ishlaydi
-         message.success("Group updated successfully");
-       } else {
-         createfn(payload);
-         message.success("Group created successfully");
-       }
+  const handleSubmitt = async (values: Branch) => {
+    const payload = {
+      name: values.name,
+      address: values.address,
+      call_number: values.call_number,
+    };
+    try {
+      if (editData) {
+        updatefn({ data: payload, id: editData.id! }); // await ishlaydi
+        message.success("Group updated successfully");
+      } else {
+        createfn(payload);
+        message.success("Group created successfully");
+      }
 
-       onClose();
-     } catch (error: any) {
-       console.error(error);
-       message.error("Error creating or updating group");
-     }
-   };
-
-
+      onClose();
+    } catch (error: any) {
+      console.error(error);
+      message.error("Error creating or updating group");
+    }
+  };
 
   return (
     <Modal
@@ -113,9 +110,9 @@ const BranchModal: React.FC<BranchModalProps> = ({
           />
         </AntForm.Item>
 
-        {/* Phone Number */}
         <AntForm.Item
-          label="Phone Number"
+          label="Phone"
+          labelCol={{ span: 24 }}
           validateStatus={errors.call_number ? "error" : ""}
           help={errors.call_number?.message}
         >
@@ -123,7 +120,11 @@ const BranchModal: React.FC<BranchModalProps> = ({
             name="call_number"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder="Enter phone number" />
+              <MaskedInput
+                {...field}
+                mask="+\9\9\8 (00) 000-00-00"
+                placeholder="Enter phone number"
+              />
             )}
           />
         </AntForm.Item>
