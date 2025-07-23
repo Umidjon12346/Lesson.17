@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import type { Paginationconfig } from "../types/general";
+import {  useMutation } from "@tanstack/react-query";
+import { GeneralService } from "../service/general.service";
 
 export const useGeneral = () => {
+  // const queryClient = useQueryClient()
   const navigate = useNavigate();
-  const handleTableChange = ({ pagination, setParams }: Paginationconfig) => {
+  const handleTableChanges = ({ pagination, setParams }: Paginationconfig) => {
     const { current, pageSize } = pagination;
-    console.log(pagination);
     
     setParams({
       page: current!,
@@ -14,12 +16,19 @@ export const useGeneral = () => {
     const searchParams = new URLSearchParams();
     searchParams.set("page", current!.toString());
     searchParams.set("limit", pageSize!.toString());
-    navigate({ search: `?${searchParams.toString()}` });
-    console.log(searchParams);
-    
+    navigate({ search: `?${searchParams.toString()}` });  
+  };
+  const updateLessonStatus = () => {
+    return useMutation({
+      mutationFn: ({  id }: {  id: number }) =>
+        GeneralService.updateLessonStatus(id),
+    });
   };
 
   return {
-    handleTableChange
-  }
+    handleTableChanges,
+    updateLessonStatus,
+  };
+
+
 };

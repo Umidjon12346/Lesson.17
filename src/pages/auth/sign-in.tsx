@@ -1,6 +1,5 @@
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-// import { authService } from "../../service/auth.service";
 import { Card, Input, Button, Select } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -17,17 +16,18 @@ interface SignInFormValues {
 
 const validationSchema = Yup.object({
   email: Yup.string()
-    .email("Email noto‘g‘ri kiritilgan")
-    .required("Email majburiy"),
+    .email("Invalid email format")
+    .required("Email is required"),
   password: Yup.string()
-    .min(6, "Parol kamida 6 ta belgidan iborat bo‘lishi kerak")
-    .required("Parol majburiy"),
-  role: Yup.string().required("Rol tanlanishi shart"),
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  role: Yup.string().required("Role is required"),
 });
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
-  const { mutate,isPending } = useAuth();
+  const { mutate, isPending } = useAuth();
+
   const initialValues: SignInFormValues = {
     email: "",
     password: "",
@@ -60,7 +60,7 @@ const SignIn: React.FC = () => {
         height: "100vh",
       }}
     >
-      <Card title="Kirish" style={{ width: 400 }}>
+      <Card title="Sign In" style={{ width: 400 }}>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -87,11 +87,11 @@ const SignIn: React.FC = () => {
               </div>
 
               <div style={{ marginBottom: "16px" }}>
-                <label>Parol:</label>
+                <label>Password:</label>
                 <Field
                   as={Input.Password}
                   name="password"
-                  placeholder="Parol"
+                  placeholder="Password"
                   onChange={handleChange}
                   value={values.password}
                 />
@@ -104,9 +104,9 @@ const SignIn: React.FC = () => {
               </div>
 
               <div style={{ marginBottom: "16px" }}>
-                <label>Rol:</label>
+                <label>Role:</label>
                 <Select
-                  placeholder="Rolni tanlang"
+                  placeholder="Select a role"
                   onChange={(value) => setFieldValue("role", value)}
                   value={values.role}
                   style={{ width: "100%" }}
@@ -124,8 +124,13 @@ const SignIn: React.FC = () => {
                 />
               </div>
 
-              <Button type="primary" htmlType="submit" loading={isPending} block>
-                Kirish
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isPending}
+                block
+              >
+                Sign In
               </Button>
             </Form>
           )}

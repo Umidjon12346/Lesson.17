@@ -1,5 +1,5 @@
 export interface Branch {
-    id:number,
+    id?:number,
   name: string;
   address: string;
   call_number: string;

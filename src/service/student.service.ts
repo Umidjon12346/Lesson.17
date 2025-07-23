@@ -3,8 +3,8 @@ import { apiConfig } from "@api/config";
 import type { Student } from "../types/student";
 
 export const StudentService = {
-  async getStudents() {
-    const res = await apiConfig().getRequest(ApiUrls.STUDENT);
+  async getStudents(params:any) {
+    const res = await apiConfig().getRequest(ApiUrls.STUDENT,params);
     return res;
   },
 

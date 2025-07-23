@@ -1,8 +1,10 @@
 import React from "react";
-import { Modal, Input, Form as AntForm, Button, Select } from "antd";
+import { Modal, Input, Form as AntForm, Button, Select, message } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import type { Teacher } from "../../types/teacher";
+import { useTeachers } from "../../hooks/useTeacher";
+
 
 interface Branch {
   id: number | undefined;
@@ -12,7 +14,6 @@ interface Branch {
 interface TeacherModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (values: Teacher) => Promise<void>;
   editData?: Teacher;
   branches: Branch[];
 }
@@ -21,25 +22,26 @@ const roles = ["main teacher", "admin", "assistant"];
 
 const validationSchema = (isEdit: boolean) =>
   Yup.object({
-    first_name: Yup.string().required("Ism majburiy"),
-    last_name: Yup.string().required("Familiya majburiy"),
-    email: Yup.string().email("Email noto‘g‘ri").required("Email majburiy"),
-    phone: Yup.string().required("Telefon majburiy"),
-    role: Yup.string().required("Rol majburiy"),
-    branchId: Yup.array().min(1, "Kamida bitta filial tanlang").required(),
+    first_name: Yup.string().required("First name is required"),
+    last_name: Yup.string().required("Last name is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    phone: Yup.string().required("Phone is required"),
+    role: Yup.string().required("Role is required"),
+    branchId: Yup.array()
+      .min(1, "At least one branch must be selected")
+      .required(),
     ...(isEdit
       ? {}
       : {
           password: Yup.string()
-            .min(6, "Parol kamida 6 belgidan iborat bo‘lishi kerak")
-            .required("Parol majburiy"),
+            .min(6, "Password must be at least 6 characters")
+            .required("Password is required"),
         }),
   });
 
 const TeacherModal: React.FC<TeacherModalProps> = ({
   visible,
   onClose,
-  onSubmit,
   editData,
   branches,
 }) => {
@@ -55,9 +57,41 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
     branchId: editData?.branchId || [],
   };
 
+  const {useTeacherCreate,useTeacherUpdate}=useTeachers({})
+  const {mutate:createfn} = useTeacherCreate()
+  const {mutate:updatefn} = useTeacherUpdate()
+
+  const handleSubmit = async (values: Teacher) => {
+    if (editData?.id) {
+      updatefn(
+        { id: editData.id, data: values },
+        {
+          onSuccess: () => {
+            message.success("Teacher updated successfully");
+            onClose();
+          },
+          onError: () => {
+            message.error("Error while updating teacher");
+          },
+        }
+      );
+    } else {
+      createfn(values, {
+        onSuccess: () => {
+          message.success("New teacher added");
+          onClose();
+        },
+        onError: () => {
+          message.error("Error while creating teacher");
+        },
+      });
+    }
+  };
+
+
   return (
     <Modal
-      title={isEdit ? "O‘qituvchini tahrirlash" : "O‘qituvchi qo‘shish"}
+      title={isEdit ? "Edit Teacher" : "Add Teacher"}
       open={visible}
       onCancel={onClose}
       footer={null}
@@ -66,19 +100,19 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
         enableReinitialize
         initialValues={initialValues}
         validationSchema={validationSchema(isEdit)}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
       >
         {({ setFieldValue }) => (
           <Form>
-            <AntForm.Item label="Ism">
-              <Field as={Input} name="first_name" placeholder="Ism" />
+            <AntForm.Item label="First Name">
+              <Field as={Input} name="first_name" placeholder="First name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="first_name" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Familiya">
-              <Field as={Input} name="last_name" placeholder="Familiya" />
+            <AntForm.Item label="Last Name">
+              <Field as={Input} name="last_name" placeholder="Last name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="last_name" />
               </div>
@@ -91,29 +125,27 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Telefon">
-              <Field as={Input} name="phone" placeholder="Telefon" />
+            <AntForm.Item label="Phone">
+              <Field as={Input} name="phone" placeholder="Phone number" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="phone" />
               </div>
             </AntForm.Item>
 
             {!isEdit && (
-              <>
-                <AntForm.Item label="Parol">
-                  <Field
-                    as={Input.Password}
-                    name="password"
-                    placeholder="Parol"
-                  />
-                  <div style={{ color: "red" }}>
-                    <ErrorMessage name="password" />
-                  </div>
-                </AntForm.Item>
-              </>
+              <AntForm.Item label="Password">
+                <Field
+                  as={Input.Password}
+                  name="password"
+                  placeholder="Password"
+                />
+                <div style={{ color: "red" }}>
+                  <ErrorMessage name="password" />
+                </div>
+              </AntForm.Item>
             )}
 
-            <AntForm.Item label="Rol">
+            <AntForm.Item label="Role">
               <Field name="role">
                 {({ field }: any) => (
                   <Select
@@ -121,7 +153,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
                     value={field.value}
                     onChange={(value) => setFieldValue("role", value)}
                     style={{ width: "100%" }}
-                    placeholder="Rolni tanlang"
+                    placeholder="Select role"
                   >
                     {roles.map((r) => (
                       <Select.Option key={r} value={r}>
@@ -136,7 +168,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Filial ID(lar)">
+            <AntForm.Item label="Branch(es)">
               <Field name="branchId">
                 {({ field }: any) => (
                   <Select
@@ -145,11 +177,11 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
                     value={field.value}
                     onChange={(val) => setFieldValue("branchId", val)}
                     style={{ width: "100%" }}
-                    placeholder="Filial(lar)ni tanlang"
+                    placeholder="Select branch(es)"
                   >
-                    {branches.map((branches) => (
-                      <Select.Option key={branches.id} value={branches.id}>
-                        {branches.name}
+                    {branches.map((branch) => (
+                      <Select.Option key={branch.id} value={branch.id}>
+                        {branch.name}
                       </Select.Option>
                     ))}
                   </Select>
@@ -161,7 +193,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
             </AntForm.Item>
 
             <Button type="primary" htmlType="submit" block>
-              Saqlash
+              Save
             </Button>
           </Form>
         )}

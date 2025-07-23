@@ -7,48 +7,49 @@ import {
   DatePicker,
   InputNumber,
   Select,
+  message,
 } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import dayjs from "dayjs";
 import type { Student } from "../../types/student";
-
-
+import { MaskedInput } from "antd-mask-input";
+import { useStudent } from "../../hooks/useStudent";
 
 interface StudentModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (values: Student) => Promise<void>;
   editData?: Student;
 }
 
 const createValidationSchema = (isEdit: boolean) =>
   Yup.object({
-    first_name: Yup.string().required("Ism majburiy"),
-    last_name: Yup.string().required("Familiya majburiy"),
+    first_name: Yup.string().required("First name is required"),
+    last_name: Yup.string().required("Last name is required"),
     email: Yup.string()
-      .email("Email manzili noto‘g‘ri formatda")
-      .required("Email majburiy"),
-    phone: Yup.string().required("Telefon majburiy"),
-    gender: Yup.string().required("Jins majburiy"),
-    date_of_birth: Yup.string().required("Tug‘ilgan sana majburiy"),
-    lidId: Yup.number().required("Lid ID majburiy"),
+      .email("Invalid email format")
+      .required("Email is required"),
+    phone: Yup.string().required("Phone number is required"),
+    gender: Yup.string().required("Gender is required"),
+    date_of_birth: Yup.string().required("Date of birth is required"),
+    lidId: Yup.number().required("Lid ID is required"),
     ...(isEdit
       ? {}
       : {
           password_hash: Yup.string()
-            .min(8, "Parol kamida 8 ta belgidan iborat bo‘lishi kerak")
-            .required("Parol majburiy"),
+            .min(8, "Password must be at least 8 characters")
+            .required("Password is required"),
           confirm_password: Yup.string()
-            .oneOf([Yup.ref("password_hash")], "Parollar mos emas")
-            .required("Parolni tasdiqlash majburiy"),
+            .oneOf([Yup.ref("password_hash")], "Passwords do not match")
+            .required("Password confirmation is required"),
         }),
   });
+
+
 
 const StudentModal: React.FC<StudentModalProps> = ({
   visible,
   onClose,
-  onSubmit,
   editData,
 }) => {
   const isEdit = !!editData;
@@ -65,34 +66,72 @@ const StudentModal: React.FC<StudentModalProps> = ({
     lidId: editData?.lidId || 0,
   };
 
+  const {useStudentCreate,useStudentUpdate} = useStudent({})
+  const {mutate:updatefn} = useStudentUpdate()
+  const {mutate:createfn} = useStudentCreate()
+
+   const handleSubmit = (values: Student) => {
+     const { confirm_password, password_hash, ...rest } = values;
+
+     const payload: any = {
+       ...rest,
+       ...(isEdit ? {} : { password_hash }),
+     };
+
+     if (isEdit && editData?.id != null) {
+       updatefn(
+         { id: editData.id, model: payload },
+         {
+           onSuccess: () => {
+             message.success("Student updated successfully.");
+             onClose();
+           },
+           onError: () => {
+             message.error("Failed to update student.");
+           },
+         }
+       );
+     } else {
+       createfn(payload, {
+         onSuccess: () => {
+           message.success("Student created successfully.");
+           onClose();
+         },
+         onError: () => {
+           message.error("Failed to create student.");
+         },
+       });
+     }
+   };
+
+
+
+
   return (
     <Modal
-      title={isEdit ? "Talabani tahrirlash" : "Talaba qo‘shish"}
+      title={isEdit ? "Edit Student" : "Add Student"}
       open={visible}
       onCancel={onClose}
       footer={null}
-      destroyOnClose
+      destroyOnHidden
     >
       <Formik
         enableReinitialize
         initialValues={initialValues}
         validationSchema={createValidationSchema(isEdit)}
-        onSubmit={(values) => {
-          const { confirm_password, ...data } = values;
-          return onSubmit(data as Student);
-        }}
+        onSubmit={handleSubmit}
       >
         {({ setFieldValue, values }) => (
           <Form>
-            <AntForm.Item label="Ism">
-              <Field as={Input} name="first_name" placeholder="Ism" />
+            <AntForm.Item label="First Name">
+              <Field as={Input} name="first_name" placeholder="First name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="first_name" />
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Familiya">
-              <Field as={Input} name="last_name" placeholder="Familiya" />
+            <AntForm.Item label="Last Name">
+              <Field as={Input} name="last_name" placeholder="Last name" />
               <div style={{ color: "red" }}>
                 <ErrorMessage name="last_name" />
               </div>
@@ -104,9 +143,20 @@ const StudentModal: React.FC<StudentModalProps> = ({
                 <ErrorMessage name="email" />
               </div>
             </AntForm.Item>
-
-            <AntForm.Item label="Telefon">
-              <Field as={Input} name="phone" placeholder="Telefon raqami" />
+            <AntForm.Item label="Phone" labelCol={{ span: 24 }}>
+              <Field name="phone">
+                {({ field, form }: any) => (
+                  <MaskedInput
+                    {...field}
+                    value={field.value || ""}
+                    onChange={(e) =>
+                      form.setFieldValue("phone", e.target.value)
+                    }
+                    onBlur={field.onBlur}
+                    mask="+\9\9\8 (00) 000-00-00"
+                  />
+                )}
+              </Field>
               <div style={{ color: "red" }}>
                 <ErrorMessage name="phone" />
               </div>
@@ -114,22 +164,22 @@ const StudentModal: React.FC<StudentModalProps> = ({
 
             {!isEdit && (
               <>
-                <AntForm.Item label="Parol">
+                <AntForm.Item label="Password">
                   <Field
                     as={Input.Password}
                     name="password_hash"
-                    placeholder="Parol"
+                    placeholder="Password"
                   />
                   <div style={{ color: "red" }}>
                     <ErrorMessage name="password_hash" />
                   </div>
                 </AntForm.Item>
 
-                <AntForm.Item label="Parolni tasdiqlang">
+                <AntForm.Item label="Confirm Password">
                   <Field
                     as={Input.Password}
                     name="confirm_password"
-                    placeholder="Parolni qayta kiriting"
+                    placeholder="Confirm password"
                   />
                   <div style={{ color: "red" }}>
                     <ErrorMessage name="confirm_password" />
@@ -138,7 +188,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
               </>
             )}
 
-            <AntForm.Item label="Jinsi">
+            <AntForm.Item label="Gender">
               <Field name="gender">
                 {({ field }: any) => (
                   <Select
@@ -146,10 +196,10 @@ const StudentModal: React.FC<StudentModalProps> = ({
                     value={field.value}
                     onChange={(value) => setFieldValue("gender", value)}
                     style={{ width: "100%" }}
-                    placeholder="Jinsni tanlang"
+                    placeholder="Select gender"
                   >
-                    <Select.Option value="male">Erkak</Select.Option>
-                    <Select.Option value="female">Ayol</Select.Option>
+                    <Select.Option value="male">Male</Select.Option>
+                    <Select.Option value="female">Female</Select.Option>
                   </Select>
                 )}
               </Field>
@@ -158,7 +208,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
               </div>
             </AntForm.Item>
 
-            <AntForm.Item label="Tug‘ilgan sana">
+            <AntForm.Item label="Date of Birth">
               <DatePicker
                 format="YYYY-MM-DD"
                 value={
@@ -192,7 +242,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
             </AntForm.Item>
 
             <Button type="primary" htmlType="submit" block>
-              Saqlash
+              Save
             </Button>
           </Form>
         )}

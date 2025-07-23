@@ -8,7 +8,7 @@ export interface Student {
   confirm_password:string
   gender: string;
   date_of_birth: string;
-  lidId: number;
+  lidId?: number;
   eventsId?: number;
   groupsId?: number;
 }

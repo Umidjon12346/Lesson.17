@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Popconfirm } from "antd";
-
+import { DeleteOutlined } from "@ant-design/icons";
 
 
 interface PopConfirmProps {
@@ -15,8 +15,8 @@ const PopConfirm: React.FC<PopConfirmProps> = ({ onDelete }) => (
     cancelText="No"
     onConfirm={onDelete}
   >
-    <Button  danger>
-      Delete
+    <Button danger>
+      <DeleteOutlined />
     </Button>
   </Popconfirm>
 );

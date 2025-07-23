@@ -1,94 +1,69 @@
 import { useEffect, useState } from "react";
 import { Button, Table, message } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { StudentService } from "../../service/student.service";
-import StudentModal from "./student-modal";
+import { useLocation } from "react-router-dom";
+import { EditOutlined } from "@ant-design/icons";
+
 import type { Student } from "../../types/student";
+import StudentModal from "./student-modal";
+import { PopConfirm } from "../../components";
+import { useGeneral } from "../../hooks";
+import { useStudent } from "../../hooks/useStudent";
 
 function Student() {
-  const [students, setStudents] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 5,
-    total: 0,
+  const location = useLocation();
+  const { handleTableChange } = useGeneral();
+
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 5,
   });
+
+  const { data, useStudentDelete } = useStudent({ params });
+  const {mutate:studentDelete} = useStudentDelete()
+
+  const students = data?.data.students ?? [];
+  const total = data?.data.total ?? 0;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<Student | null>(null);
 
-  const fetchStudents = async (page: number, pageSize: number) => {
-    setLoading(true);
-    try {
-      const res = await StudentService.getStudents();
-
-      if (res?.data?.students) {
-        setStudents(res.data.students);
-        setPagination({
-          ...pagination,
-          current: page,
-          pageSize,
-          total: res.data.students.length,
-        });
-      }
-    } catch {
-      message.error("Talabalarni yuklashda xatolik yuz berdi");
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchStudents(pagination.current!, pagination.pageSize!);
-  }, []);
+    const searchParams = new URLSearchParams(location.search);
+    const page = searchParams.get("page");
+    const limit = searchParams.get("limit");
+    if (page && limit) {
+      setParams({
+        page: Number(page),
+        limit: Number(limit),
+      });
+    }
+  }, [location.search]);
 
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    fetchStudents(pagination.current!, pagination.pageSize!);
+  const onTableChange = (pagination: TablePaginationConfig) => {
+    handleTableChange({ pagination, setParams });
   };
 
   const handleDelete = async (id: number) => {
-    try {
-      await StudentService.deleteStudent(id);
-      message.success("Talaba o‘chirildi");
-      fetchStudents(pagination.current!, pagination.pageSize!);
-    } catch {
-      message.error("O‘chirishda xatolik yuz berdi");
-    }
+    studentDelete(id)
+    message.success("O'chirildi")
   };
 
-  const handleSubmit = async (values: Student) => {
-    try {
-      if (editData?.id != null) {
-        const res = await StudentService.updateStudent(values, editData.id);
-        if (res?.status === 200) {
-          message.success("Talaba tahrirlandi");
-        }
-      } else {
-        const res = await StudentService.createStudent(values);
-        if (res?.status === 201 || res?.status === 200) {
-          message.success("Talaba yaratildi");
-        }
-      }
-      fetchStudents(pagination.current!, pagination.pageSize!);
-      setIsModalOpen(false);
-      setEditData(null);
-    } catch {
-      message.error("Saqlashda xatolik yuz berdi");
-    }
-  };
-  
+ 
 
   const columns: ColumnsType<Student> = [
-    { title: "Ism", dataIndex: "first_name", key: "first_name" },
-    { title: "Familiya", dataIndex: "last_name", key: "last_name" },
+    { title: "First Name", dataIndex: "first_name", key: "first_name" },
+    { title: "Last Name", dataIndex: "last_name", key: "last_name" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Telefon", dataIndex: "phone", key: "phone" },
-    { title: "Jinsi", dataIndex: "gender", key: "gender" },
+    { title: "Phone", dataIndex: "phone", key: "phone" },
+    { title: "Gender", dataIndex: "gender", key: "gender" },
     {
-      title: "Tug‘ilgan sana",
+      title: "Date of Birth",
       dataIndex: "date_of_birth",
       key: "date_of_birth",
     },
     {
-      title: "Amallar",
+      title: "Actions",
       key: "actions",
       render: (_, record) => (
         <div style={{ display: "flex", gap: 8 }}>
@@ -98,21 +73,9 @@ function Student() {
               setIsModalOpen(true);
             }}
           >
-            Tahrirlash
+            <EditOutlined />
           </Button>
-          <Button
-            danger
-            onClick={() => {
-              if (
-                window.confirm("Haqiqatan ham o‘chirmoqchimisiz?") &&
-                record.id !== undefined
-              ) {
-                handleDelete(record.id);
-              }
-            }}
-          >
-            O‘chirish
-          </Button>
+          <PopConfirm onDelete={() => handleDelete(record.id!)} />
         </div>
       ),
     },
@@ -127,7 +90,7 @@ function Student() {
           marginBottom: 16,
         }}
       >
-        <h2>Talabalar</h2>
+        <h2>Students</h2>
         <Button
           type="primary"
           onClick={() => {
@@ -135,18 +98,23 @@ function Student() {
             setIsModalOpen(true);
           }}
         >
-          + Talaba qo‘shish
+          + Add Student
         </Button>
       </div>
 
-      <Table
+      <Table<Student>
+        bordered
         columns={columns}
         dataSource={students}
-        loading={loading}
-        // rowKey={(record) => record.id}
         rowKey={(record) => record.id ?? record.email}
-        pagination={pagination}
-        onChange={handleTableChange}
+        pagination={{
+          current: params.page,
+          pageSize: params.limit,
+          total,
+          showSizeChanger: true,
+          pageSizeOptions: ["4", "5", "10", "20"],
+        }}
+        onChange={onTableChange}
       />
 
       <StudentModal
@@ -154,10 +122,6 @@ function Student() {
         onClose={() => {
           setIsModalOpen(false);
           setEditData(null);
-        }}
-        onSubmit={async (values) => {
-          const { confirm_password,password_hash, ...studentData } = values;
-          await handleSubmit(studentData as Student);
         }}
         editData={editData ?? undefined}
       />

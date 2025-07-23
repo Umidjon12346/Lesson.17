@@ -1,91 +1,52 @@
 import { useEffect, useState } from "react";
-import { Button, Table, message } from "antd";
+import { Button, Table } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { Course } from "../../types/course";
-import { CourseService } from "../../service/course.service";
-import Coursesmodal from "./course-modal";
+import { useLocation } from "react-router-dom";
+import { useGeneral, useCourse } from "../../hooks";
+import CoursesModal from "./course-modal";
 import { PopConfirm } from "../../components";
+import { EditOutlined } from "@ant-design/icons";
 
 interface CourseWithId extends Course {
   id: number;
 }
 
 function Courses() {
-  const [courses, setCourses] = useState<CourseWithId[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 10,
-    total: 1000,
-  });
+  const location = useLocation();
+  const { handleTableChange } = useGeneral();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<CourseWithId | null>(null);
 
-  const fetchCourses = async (page: number, pageSize: number) => {
-    setLoading(true);
-    try {
-      const res = await CourseService.getCourses();
-      if (res?.data?.courses) {
-        setCourses(res.data.courses);
-        setPagination({
-          ...pagination,
-          current: page,
-          pageSize,
-          total: res.data.courses.length,
-        });
-      }
-    } catch {
-      message.error("Failed to load courses");
-    }
-    setLoading(false);
-  };
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 5,
+  });
 
   useEffect(() => {
-    fetchCourses(pagination.current!, pagination.pageSize!);
-  }, []);
+    const searchParams = new URLSearchParams(location.search);
+    const page = searchParams.get("page");
+    const limit = searchParams.get("limit");
+    if (page && limit) {
+      setParams({
+        page: Number(page),
+        limit: Number(limit),
+      });
+    }
+  }, [location.search]);
 
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    fetchCourses(pagination.current!, pagination.pageSize!);
-  };
+  const { data, useDeleteCourse } = useCourse(params);
+  const { mutate: deleteCourse } = useDeleteCourse();
+
+
 
   const handleDelete = async (id: number) => {
-    try {
-      await CourseService.deleteCourses(id);
-      message.success("Course deleted");
-      fetchCourses(pagination.current!, pagination.pageSize!);
-    } catch {
-      message.error("An error occurred while deleting");
-    }
+    deleteCourse( id );
   };
 
-  const handleSubmit = async (values: Course) => {
-    const payload = {
-      title: values.title,
-      description: values.description,
-      price: values.price,
-      duration: values.duration,
-      lessons_in_a_week: values.lessons_in_a_week,
-      lesson_duration: values.lesson_duration,
-    };
-
-    try {
-      if (editData) {
-        const res = await CourseService.updateCourses(payload, editData.id);
-        if (res?.status === 200) {
-          message.success("Course updated");
-        }
-      } else {
-        const res = await CourseService.createCourses(payload);
-        if (res?.status === 201 || res?.status === 200) {
-          message.success("Course created");
-        }
-      }
-      fetchCourses(pagination.current!, pagination.pageSize!);
-      setIsModalOpen(false);
-      setEditData(null);
-    } catch {
-      message.error("An error occurred while creating or updating");
-    }
+  const onTableChange = (pagination: TablePaginationConfig) => {
+    handleTableChange({ pagination, setParams });
   };
 
   const columns: ColumnsType<CourseWithId> = [
@@ -94,7 +55,7 @@ function Courses() {
     { title: "Price", dataIndex: "price", key: "price" },
     { title: "Duration", dataIndex: "duration", key: "duration" },
     {
-      title: "Lessons per Week",
+      title: "Lessons/Week",
       dataIndex: "lessons_in_a_week",
       key: "lessons_in_a_week",
     },
@@ -114,9 +75,9 @@ function Courses() {
               setIsModalOpen(true);
             }}
           >
-            Edit
+            <EditOutlined />
           </Button>
-          <PopConfirm onDelete={()=>handleDelete(record.id)}/>
+          <PopConfirm onDelete={() => handleDelete(record.id)} />
         </div>
       ),
     },
@@ -143,22 +104,27 @@ function Courses() {
         </Button>
       </div>
 
-      <Table
+      <Table<CourseWithId>
+        bordered
         columns={columns}
-        dataSource={courses}
-        loading={loading}
+        dataSource={data?.data.courses}
         rowKey={(record) => record.id}
-        pagination={pagination}
-        onChange={handleTableChange}
+        pagination={{
+          current: params.page,
+          pageSize: params.limit,
+          total: data?.data.total,
+          showSizeChanger: true,
+          pageSizeOptions: ["4", "5", "10"],
+        }}
+        onChange={onTableChange}
       />
 
-      <Coursesmodal
+      <CoursesModal
         visible={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           setEditData(null);
         }}
-        onSubmit={handleSubmit}
         editData={editData ?? undefined}
       />
     </div>

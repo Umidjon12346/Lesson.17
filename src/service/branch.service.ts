@@ -3,8 +3,8 @@ import { apiConfig } from "@api/config";
 import type { Branch } from "../types/branch";
 
 export const BranchService = {
-  async getBranches() {
-    const res = await apiConfig().getRequest(ApiUrls.BRANCH);
+  async getBranches(params:any) {
+    const res = await apiConfig().getRequest(ApiUrls.BRANCH,params);
     return res;
   },
   async createBranch(model: Branch) {

@@ -6,42 +6,30 @@ import {
   Select,
   Form as AntForm,
   Button,
+  message,
 } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
+
 import dayjs from "dayjs";
 import type { Group } from "../../types/group";
 
-const { Option } = Select;
+import { useCourse, useGroup } from "../../hooks";
 
-interface Course {
-  id: number;
-  title: string;
-}
+import { groupSchema } from "../../utility";
+
+const { Option } = Select;
 
 interface GroupModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (values: Group) => void;
   editData?: Group;
-  courses: Course[];
 }
-
-const validationSchema = Yup.object({
-  name: Yup.string().required("Nomi majburiy"),
-  course_id: Yup.number().required("Kurs tanlang"),
-  status: Yup.string().required("Holat tanlang"),
-  start_date: Yup.string().required("Boshlanish sanasi"),
-  end_date: Yup.string().required("Tugash sanasi"),
-});
 
 const GroupModal: React.FC<GroupModalProps> = ({
   visible,
   onClose,
-  onSubmit,
   editData,
-  courses,
 }) => {
   const {
     control,
@@ -49,7 +37,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
     reset,
     formState: { errors },
   } = useForm<Group>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(groupSchema),
     defaultValues: {
       id: 0,
       name: "",
@@ -60,6 +48,12 @@ const GroupModal: React.FC<GroupModalProps> = ({
     },
   });
 
+  const { createGroupMutation, updateGroupMutation } = useGroup({});
+  const { mutate: updatefn } = updateGroupMutation();
+  const { mutate: createfn } = createGroupMutation();
+
+  const { data } = useCourse({});
+  const courses = data?.data?.courses;
   useEffect(() => {
     if (editData) {
       reset(editData);
@@ -75,16 +69,41 @@ const GroupModal: React.FC<GroupModalProps> = ({
     }
   }, [editData, reset]);
 
+  const onSubmit = async (values: Group) => {
+    const payload = {
+      name: values.name,
+      course_id: values.course_id,
+      status: values.status,
+      start_date: values.start_date,
+      end_date: values.end_date,
+    };
+
+    try {
+      if (editData) {
+        updatefn({ data: payload, id: editData.id! }); // await ishlaydi
+        message.success("Group updated successfully");
+      } else {
+        createfn(payload);
+        message.success("Group created successfully");
+      }
+
+      onClose();
+    } catch (error: any) {
+      console.error(error);
+      message.error("Error creating or updating group");
+    }
+  };
+
   return (
     <Modal
-      title={editData ? "Guruhni tahrirlash" : "Guruh qo‘shish"}
+      title={editData ? "Edit Group" : "Add Group"}
       open={visible}
       onCancel={onClose}
       footer={null}
     >
       <AntForm layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <AntForm.Item
-          label="Guruh nomi"
+          label="Group Name"
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
         >
@@ -92,13 +111,13 @@ const GroupModal: React.FC<GroupModalProps> = ({
             name="name"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder="Guruh nomi" />
+              <Input {...field} placeholder="Enter group name" />
             )}
           />
         </AntForm.Item>
 
         <AntForm.Item
-          label="Kurs"
+          label="Course"
           validateStatus={errors.course_id ? "error" : ""}
           help={errors.course_id?.message}
         >
@@ -108,11 +127,11 @@ const GroupModal: React.FC<GroupModalProps> = ({
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Kursni tanlang"
+                placeholder="Select a course"
                 value={field.value || undefined}
                 onChange={(value) => field.onChange(value)}
               >
-                {courses.map((course) => (
+                {courses.map((course: any) => (
                   <Option key={course.id} value={course.id}>
                     {course.title}
                   </Option>
@@ -123,7 +142,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
         </AntForm.Item>
 
         <AntForm.Item
-          label="Holat"
+          label="Status"
           validateStatus={errors.status ? "error" : ""}
           help={errors.status?.message}
         >
@@ -133,7 +152,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Holatni tanlang"
+                placeholder="Select status"
                 value={field.value || undefined}
                 onChange={(value) => field.onChange(value)}
               >
@@ -145,7 +164,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
         </AntForm.Item>
 
         <AntForm.Item
-          label="Boshlanish sanasi"
+          label="Start Date"
           validateStatus={errors.start_date ? "error" : ""}
           help={errors.start_date?.message}
         >
@@ -163,7 +182,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
         </AntForm.Item>
 
         <AntForm.Item
-          label="Tugash sanasi"
+          label="End Date"
           validateStatus={errors.end_date ? "error" : ""}
           help={errors.end_date?.message}
         >
@@ -181,7 +200,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
         </AntForm.Item>
 
         <Button type="primary" htmlType="submit" block>
-          Saqlash
+          Save
         </Button>
       </AntForm>
     </Modal>

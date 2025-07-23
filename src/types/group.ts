@@ -1,3 +1,6 @@
+import type { Student } from "./student";
+import type { Teacher } from "./teacher";
+
 export interface Group {
     id?: number;
     name:string,
@@ -5,4 +8,12 @@ export interface Group {
     status:string,
     start_date:string,
     end_date:string
+}
+
+export interface GroupTeachersType{
+    teachers:Teacher[]
+}
+
+export interface GroupStudentsType{
+    students:Student[]
 }

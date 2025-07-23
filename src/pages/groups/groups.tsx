@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button, Table, message } from "antd";
+import { Button, Table } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { GroupService } from "../../service/groups.service";
-import { CourseService } from "../../service/course.service";
 import type { Group } from "../../types/group";
 import GroupModal from "./modal";
 import { PopConfirm } from "../../components";
-import { useLocation } from "react-router-dom";
+import {  Link, useLocation } from "react-router-dom";
 import { useGeneral, useGroup } from "../../hooks";
+import {EditOutlined} from "@ant-design/icons";
 
 interface GroupWithId extends Group {
   id: number;
@@ -15,13 +14,8 @@ interface GroupWithId extends Group {
   updated_at?: string;
 }
 
-interface Course {
-  id: number;
-  title: string;
-}
 
 function Groups() {
-  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(false);
   const { handleTableChange } = useGeneral();
   const location = useLocation();
@@ -29,13 +23,11 @@ function Groups() {
     page: 1,
     limit: 5,
   });
-  const { data, useDeleteGroup } = useGroup(params );
+  const { data, useDeleteGroup } = useGroup(params);
   const { mutate: deleteGroup } = useDeleteGroup();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<GroupWithId | null>(null);
 
-  
-  
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const page = searchParams.get("page");
@@ -49,24 +41,6 @@ function Groups() {
   }, [location.search]);
 
 
-  const fetchCourses = async () => {
-    try {
-      const res = await CourseService.getCourses();
-      console.log(res);
-
-      if (res && res.data && res.data.courses) {
-        setCourses(res.data.courses);
-      } else {
-        setCourses([]);
-      }
-    } catch {
-      message.error("Kurslarni yuklashda xatolik");
-    }
-  };
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
   const onTableChange = (pagination: TablePaginationConfig) => {
     handleTableChange({ pagination, setParams });
   };
@@ -75,44 +49,16 @@ function Groups() {
     deleteGroup({ id });
   };
 
-  const handleSubmit = async (values: Group) => {
-    const payload = {
-      name: values.name,
-      course_id: values.course_id,
-      status: values.status,
-      start_date: values.start_date,
-      end_date: values.end_date,
-    };
-
-    try {
-      if (editData) {
-        const res = await GroupService.editGroup(editData.id, payload);
-        if (res?.status === 200) {
-          message.success("Guruh tahrirlandi");
-        }
-      } else {
-        const res = await GroupService.createGroup(payload);
-        if (res?.status === 201 || res?.status === 200) {
-          message.success("Guruh yaratildi");
-        }
-      }
-
-      setIsModalOpen(false);
-      setEditData(null);
-    } catch {
-      message.error("Yaratishda yoki tahrirlashda xatolik");
-    }
-  };
-
+ 
 
   const columns: ColumnsType<Group> = [
-    { title: "Nomi", dataIndex: "name", key: "name" },
+    { title: "Name", dataIndex: "name", key: "name" },
     { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Kurs ID", dataIndex: "course_id", key: "course_id" },
-    { title: "Boshlanish", dataIndex: "start_date", key: "start_date" },
-    { title: "Tugash", dataIndex: "end_date", key: "end_date" },
+    { title: "Course ID", dataIndex: "course_id", key: "course_id" },
+    { title: "Start Date", dataIndex: "start_date", key: "start_date" },
+    { title: "End Date", dataIndex: "end_date", key: "end_date" },
     {
-      title: "Amallar",
+      title: "Actions",
       key: "actions",
       render: (_, record: any) => (
         <div style={{ display: "flex", gap: 8 }}>
@@ -123,8 +69,9 @@ function Groups() {
               setIsModalOpen(true);
             }}
           >
-            Tahrirlash
+            <EditOutlined />
           </Button>
+          <Link to={`${record.id}`}>view</Link>
         </div>
       ),
     },
@@ -139,7 +86,7 @@ function Groups() {
           marginBottom: 16,
         }}
       >
-        <h2>Guruhlar</h2>
+        <h2>Groups</h2>
         <Button
           type="primary"
           onClick={() => {
@@ -147,11 +94,12 @@ function Groups() {
             setIsModalOpen(true);
           }}
         >
-          + Guruh qo‘shish
+          + Add Group
         </Button>
       </div>
 
       <Table<Group>
+        bordered
         columns={columns}
         dataSource={data?.data.data}
         loading={loading}
@@ -160,8 +108,8 @@ function Groups() {
           current: params.page,
           pageSize: params.limit,
           total: data?.data?.total,
-          showSizeChanger:true,
-          pageSizeOptions:["4","5","7","10"]
+          showSizeChanger: true,
+          pageSizeOptions: ["4", "5", "7", "10"],
         }}
         onChange={onTableChange}
       />
@@ -172,9 +120,7 @@ function Groups() {
           setIsModalOpen(false);
           setEditData(null);
         }}
-        onSubmit={handleSubmit}
         editData={editData ?? undefined}
-        courses={courses}
       />
     </div>
   );
