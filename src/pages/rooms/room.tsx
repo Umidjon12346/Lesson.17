@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Button, Space, Table, type TablePaginationConfig } from "antd";
 import RoomModal from "./modal";
 import type { Room } from "../../types/room";
-import { PopConfirm, Tables } from "../../components";
+
 import { useLocation } from "react-router-dom";
 import { useGeneral, useRoom } from "../../hooks";
 import { EditOutlined } from "@ant-design/icons";
+import { Tables } from "../../components";
 
 function Rooms() {
   const [open, setOpen] = useState(false);
@@ -29,13 +30,9 @@ function Rooms() {
     }
   }, [location.search]);
 
-  const { data, useRoomDelete } = useRoom(params);
+  const { data } = useRoom(params);
   const { handleTableChanges } = useGeneral();
-  const { mutate: deleteFn, isPending: isDeleting } = useRoomDelete();
 
-  const deleteItem = (id: number) => {
-    deleteFn(id);
-  };
 
   const editItem = (record: Room) => {
     setUpdate(record);
