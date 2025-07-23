@@ -12,7 +12,7 @@ import { useStudent } from "../../hooks/useStudent";
 
 function Student() {
   const location = useLocation();
-  const { handleTableChange } = useGeneral();
+  const { handleTableChanges } = useGeneral();
 
   const [params, setParams] = useState({
     page: 1,
@@ -41,7 +41,7 @@ function Student() {
   }, [location.search]);
 
   const onTableChange = (pagination: TablePaginationConfig) => {
-    handleTableChange({ pagination, setParams });
+    handleTableChanges({ pagination, setParams });
   };
 
   const handleDelete = async (id: number) => {

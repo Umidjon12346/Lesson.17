@@ -10,8 +10,8 @@ import { useGeneral, useTeachers } from "../../hooks";
 import { useBranches } from "../../hooks/useBranches";
 
 function TeacherPage() {
-  const [loading, setLoading] = useState(false);
-  const { handleTableChange } = useGeneral();
+  const [loading,] = useState(false);
+  const { handleTableChanges } = useGeneral();
   const location = useLocation();
   const [params, setParams] = useState({
     page: 1,
@@ -38,7 +38,7 @@ function TeacherPage() {
   }, [location.search]);
 
   const onTableChange = (pagination: TablePaginationConfig) => {
-    handleTableChange({ pagination, setParams });
+    handleTableChanges({ pagination, setParams });
   };
 
   const handleDelete = async (id: number) => {

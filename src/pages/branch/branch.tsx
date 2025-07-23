@@ -15,7 +15,7 @@ interface BranchWithId extends Branch {
 
 const Branch = () => {
   const location = useLocation();
-  const { handleTableChange } = useGeneral();
+  const { handleTableChanges } = useGeneral();
   const [params, setParams] = useState({ page: 1, limit: 5 });
 
   const { data,useBranchDelete  } = useBranches(params);
@@ -37,7 +37,7 @@ const Branch = () => {
   }, [location.search]);
 
   const onTableChange = (pagination: TablePaginationConfig) => {
-    handleTableChange({ pagination, setParams });
+    handleTableChanges({ pagination, setParams });
   };
 
   const handleDelete = (id: number) => {

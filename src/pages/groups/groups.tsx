@@ -16,8 +16,8 @@ interface GroupWithId extends Group {
 
 
 function Groups() {
-  const [loading, setLoading] = useState(false);
-  const { handleTableChange } = useGeneral();
+  const [loading] = useState(false);
+  const { handleTableChanges } = useGeneral();
   const location = useLocation();
   const [params, setParams] = useState({
     page: 1,
@@ -42,7 +42,7 @@ function Groups() {
 
 
   const onTableChange = (pagination: TablePaginationConfig) => {
-    handleTableChange({ pagination, setParams });
+    handleTableChanges({ pagination, setParams });
   };
 
   const handleDelete = async (id: number) => {

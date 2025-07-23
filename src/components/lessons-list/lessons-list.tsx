@@ -2,7 +2,7 @@ import { Button, Tooltip } from "antd";
 import { useRef, useState } from "react";
 import LessonModal from "./lessons-list-modal";
 import dayjs from "dayjs"
-import { useGeneral } from "../../hooks";
+// import { useGeneral } from "../../hooks";
 
 function LessonLists({ lessons }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,8 +11,8 @@ function LessonLists({ lessons }: any) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("pending");
   const [description, setDescription] = useState("");
-  const {updateLessonStatus} = useGeneral()
-  const {mutate:updateFn} = updateLessonStatus()
+  // const {updateLessonStatus} = useGeneral()
+  // const {mutate:updateFn} = updateLessonStatus()
 
   const handleScroll = () => {
     if (containerRef.current) {

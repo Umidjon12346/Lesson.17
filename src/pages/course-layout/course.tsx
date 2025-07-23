@@ -14,7 +14,7 @@ interface CourseWithId extends Course {
 
 function Courses() {
   const location = useLocation();
-  const { handleTableChange } = useGeneral();
+  const { handleTableChanges } = useGeneral();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<CourseWithId | null>(null);
@@ -46,7 +46,7 @@ function Courses() {
   };
 
   const onTableChange = (pagination: TablePaginationConfig) => {
-    handleTableChange({ pagination, setParams });
+    handleTableChanges({ pagination, setParams });
   };
 
   const columns: ColumnsType<CourseWithId> = [
