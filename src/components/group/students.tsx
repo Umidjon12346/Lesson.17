@@ -1,8 +1,9 @@
 import { Collapse, Card } from "antd";
+import LessonLists from "../lessons-list/lessons-list";
 
 const { Panel } = Collapse;
 
-function GroupStudents({ students }: any) {
+function GroupStudents({ students,lessons }: any) {
   console.log(students);
   
   
@@ -25,6 +26,7 @@ function GroupStudents({ students }: any) {
                 <p>
                   <strong>Email:</strong> {student.email}
                 </p>
+               
               </Card>
             </Panel>
           );

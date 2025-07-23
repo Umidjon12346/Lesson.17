@@ -19,11 +19,18 @@ const SingleGroup = () => {
 
   return (
     <div className="flex flex-col gap-9">
-      {teachers?.data?.length > 0 && <GroupTeachers teachers={teachers?.data} />}
+      {teachers?.data?.length > 0 && (
+        <GroupTeachers teachers={teachers?.data} />
+      )}
       {lessons?.data?.lessons?.length > 0 && (
         <GroupLessons lessons={lessons?.data.lessons} />
       )}
-      {students?.data?.length > 0 && <GroupStudents students={students?.data} />}
+      {students?.data?.length > 0 && (
+        <GroupStudents
+          students={students?.data}
+          lesson={lessons?.data.lessons}
+        />
+      )}
     </div>
   );
 };
