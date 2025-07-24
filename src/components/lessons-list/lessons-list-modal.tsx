@@ -1,4 +1,3 @@
-// components/LessonModal.tsx
 import { Modal, Select, Input } from "antd";
 import React from "react";
 
@@ -19,7 +18,7 @@ interface LessonModalProps {
 const LessonModal: React.FC<LessonModalProps> = ({
   open,
   lesson,
-  // status,
+  status,
   description,
   onChangeStatus,
   onChangeDescription,
@@ -38,13 +37,14 @@ const LessonModal: React.FC<LessonModalProps> = ({
       <div className="mb-4">
         <label>Status:</label>
         <Select
-          
+          value={status} // ✅ value qo‘shildi
           onChange={onChangeStatus}
           className="w-full mt-1"
         >
-          <Option value="pending">Kutilmoqda</Option>
-          <Option value="completed">Tugallangan</Option>
-          <Option value="skipped">O‘tkazilgan</Option>
+          <Option value="yangi">Yangi</Option>
+          <Option value="bekor qilingan">Bekor qilingan</Option>
+          <Option value="kechiktirilgan">Kechiktirilgan</Option>
+          <Option value="yakunlangan">Yakunlangan</Option>
         </Select>
       </div>
 

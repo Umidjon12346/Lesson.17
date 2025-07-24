@@ -23,14 +23,15 @@ const updateLessonStatus = () => {
     mutationFn: ({
       id,
       status,
-      description,
+      note,
     }: {
       id: number;
       status: string;
-      description: string;
-    }) => GeneralService.updateLessonStatus(id, { status, description }),
+      note?: string;
+    }) => GeneralService.updateLessonStatus(id, { status, note }),
   });
 };
+
 
 
 

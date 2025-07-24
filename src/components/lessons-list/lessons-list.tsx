@@ -57,7 +57,7 @@ const handleModalOk = () => {
    {
      id: selectedLesson.id,
      status,
-     description,
+     note: description,
    },
    {
      onSuccess: () => {
