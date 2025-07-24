@@ -6,7 +6,7 @@ import type { Room } from "../../types/room";
 import { useLocation } from "react-router-dom";
 import { useGeneral, useRoom } from "../../hooks";
 import { EditOutlined } from "@ant-design/icons";
-import { Tables } from "../../components";
+import { PopConfirm, Tables } from "../../components";
 
 function Rooms() {
   const [open, setOpen] = useState(false);
@@ -30,8 +30,9 @@ function Rooms() {
     }
   }, [location.search]);
 
-  const { data } = useRoom(params);
+  const { data,useRoomDelete } = useRoom(params);
   const { handleTableChanges } = useGeneral();
+  const {mutate:deleteGroup} = useRoomDelete()
 
   console.log(data);
   
@@ -54,6 +55,10 @@ function Rooms() {
     handleTableChanges({ pagination, setParams });
   };
 
+   const handleDelete = async (id: number) => {
+     deleteGroup( id );
+   };
+
   const columns = [
     ...(Tables.RoomColumns ?? []),
     {
@@ -64,7 +69,7 @@ function Rooms() {
           <Button type="primary" onClick={() => editItem(record)}>
             <EditOutlined />
           </Button>
-          
+          <PopConfirm onDelete={() => handleDelete(record.id!)} />
         </Space>
       ),
     },

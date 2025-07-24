@@ -14,8 +14,6 @@ interface CourseModalProps {
   editData?: Course;
 }
 
-
-
 const CourseModal: React.FC<CourseModalProps> = ({
   visible,
   onClose,
@@ -37,6 +35,7 @@ const CourseModal: React.FC<CourseModalProps> = ({
       price: undefined,
       duration: "",
       lessons_in_a_week: undefined,
+      lessons_in_a_month: undefined,
       lesson_duration: "",
       ...editData,
     },
@@ -48,10 +47,11 @@ const CourseModal: React.FC<CourseModalProps> = ({
       title: values.title,
       description: values.description,
       price: values.price,
-      duration: values.duration,
-      lessons_in_a_week: values.lessons_in_a_week,
-      lesson_duration: values.lesson_duration,
+      duration: Number(values.duration),
+      lessons_in_a_month: Number(values.lessons_in_a_month),
+      lesson_duration: Number(values.lesson_duration),
     };
+
 
     try {
       if (editData) {
@@ -121,9 +121,9 @@ const CourseModal: React.FC<CourseModalProps> = ({
             control={control}
             render={({ field }) => (
               <Select {...field} placeholder="Select duration" allowClear>
-                <Option value="3 months">3 months</Option>
-                <Option value="6 months">6 months</Option>
-                <Option value="12 months">12 months</Option>
+                <Option value={3}>3 months</Option>
+                <Option value={6}>6 months</Option>
+                <Option value={12}>12 months</Option>
               </Select>
             )}
           />
@@ -135,23 +135,23 @@ const CourseModal: React.FC<CourseModalProps> = ({
           help={errors.lessons_in_a_week?.message}
         >
           <Controller
-            name="lessons_in_a_week"
+            name="lessons_in_a_month"
             control={control}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Select number of lessons"
+                placeholder="Select number of lessons per month"
                 allowClear
               >
-                <Option value={3}>3</Option>
-                <Option value={5}>5</Option>
+                <Option value={12}>12</Option>
+                <Option value={20}>20</Option>
               </Select>
             )}
           />
         </AntForm.Item>
 
         <AntForm.Item
-          label="Lesson Duration"
+          label="Lesson Duration (minutes)"
           validateStatus={errors.lesson_duration ? "error" : ""}
           help={errors.lesson_duration?.message}
         >
@@ -164,8 +164,10 @@ const CourseModal: React.FC<CourseModalProps> = ({
                 placeholder="Select lesson duration"
                 allowClear
               >
-                <Option value="2 hours">2 hours</Option>
-                <Option value="4 hours">4 hours</Option>
+                <Option value={120}>2 hours</Option>
+                <Option value={180}>3 hours</Option>
+                <Option value={240}>4 hours</Option>
+                <Option value={270}>4.5 hours</Option>
               </Select>
             )}
           />

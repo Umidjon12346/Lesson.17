@@ -8,7 +8,6 @@ export const groupSchema = Yup.object({
   end_date: Yup.string().required("End date is required"),
 });
 
-
 export const branchSchema = Yup.object({
   name: Yup.string().required("Branch name is required"),
   address: Yup.string().required("Address is required"),
@@ -24,6 +23,11 @@ export const courseSchema = Yup.object().shape({
     .integer("Price must be an integer")
     .required("Price is required"),
   duration: Yup.string().required("Duration is required"),
+  lessons_in_a_month: Yup
+    .number()
+    .required("Lessons per month is required")
+    .oneOf([12, 20], "Must be either 12 or 20"),
+
   lessons_in_a_week: Yup.number()
     .typeError("Lessons per week must be a whole number")
     .min(1, "Lessons per week must be at least 1")

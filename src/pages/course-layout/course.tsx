@@ -93,7 +93,16 @@ function Courses() {
           marginBottom: 16,
         }}
       >
-        <h2>Courses</h2>
+        <h2
+          style={{
+          
+            padding: "16px",
+            fontSize: "18px",
+            fontWeight: "bold",
+          }}
+        >
+          Courses
+        </h2>
         <Button
           type="primary"
           onClick={() => {
