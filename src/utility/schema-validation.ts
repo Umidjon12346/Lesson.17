@@ -22,19 +22,24 @@ export const courseSchema = Yup.object().shape({
     .min(0, "Price cannot be less than 0")
     .integer("Price must be an integer")
     .required("Price is required"),
-  duration: Yup.string().required("Duration is required"),
-  lessons_in_a_month: Yup
-    .number()
+  duration: Yup.number()
+    .typeError("Duration must be a number")
+    .min(1, "Duration must be at least 1 month")
+    .required("Duration is required"),
+  lessons_in_a_month: Yup.number()
     .required("Lessons per month is required")
     .oneOf([12, 20], "Must be either 12 or 20"),
-
   lessons_in_a_week: Yup.number()
     .typeError("Lessons per week must be a whole number")
     .min(1, "Lessons per week must be at least 1")
     .integer("Lessons per week must be an integer")
     .required("Lessons per week is required"),
-  lesson_duration: Yup.string().required("Lesson duration is required"),
+  lesson_duration: Yup.number()
+    .typeError("Duration must be a number")
+    .min(1, "Duration must be at least 1 month")
+    .required("Duration is required"),
 });
+
 
 export const RoomValidation = Yup.object({
   branchId: Yup.number()

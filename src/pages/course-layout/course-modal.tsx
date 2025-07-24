@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Input, Form as AntForm, Button, Select, message } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -27,31 +27,42 @@ const CourseModal: React.FC<CourseModalProps> = ({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<Course>({
     defaultValues: {
       title: "",
       description: "",
-      price: undefined,
-      duration: "",
-      lessons_in_a_week: undefined,
-      lessons_in_a_month: undefined,
-      lesson_duration: "",
+      price: 0,
+      duration: 0,
+      lessons_in_a_week: 0,
+      lessons_in_a_month: 0,
+      lesson_duration: 0,
       ...editData,
     },
     resolver: yupResolver(courseSchema),
   });
 
+  useEffect(() => {
+    if (editData) {
+      Object.entries(editData).forEach(([key, value]) => {
+        setValue(key as keyof Course, value);
+      });
+    } else {
+      reset();
+    }
+  }, [editData, setValue, reset]);
+
   const onSubmit = async (values: Course) => {
-    const payload = {
+    const payload: Course = {
       title: values.title,
       description: values.description,
-      price: values.price,
+      price: Number(values.price),
       duration: Number(values.duration),
+      lessons_in_a_week: Number(values.lessons_in_a_week),
       lessons_in_a_month: Number(values.lessons_in_a_month),
       lesson_duration: Number(values.lesson_duration),
     };
-
 
     try {
       if (editData) {
@@ -62,6 +73,7 @@ const CourseModal: React.FC<CourseModalProps> = ({
         message.success("Course created successfully");
       }
       onClose();
+      reset();
     } catch (error) {
       console.error(error);
       message.error("Error creating or updating course");
@@ -79,6 +91,7 @@ const CourseModal: React.FC<CourseModalProps> = ({
       footer={null}
     >
       <AntForm layout="vertical" onFinish={handleSubmit(onSubmit)}>
+        {/* Course Title */}
         <AntForm.Item
           label="Course Title"
           validateStatus={errors.title ? "error" : ""}
@@ -93,6 +106,7 @@ const CourseModal: React.FC<CourseModalProps> = ({
           />
         </AntForm.Item>
 
+        {/* Price */}
         <AntForm.Item
           label="Price"
           validateStatus={errors.price ? "error" : ""}
@@ -103,14 +117,15 @@ const CourseModal: React.FC<CourseModalProps> = ({
             control={control}
             render={({ field }) => (
               <Input
-                type="number"
                 {...field}
+                type="number"
                 placeholder="Enter course price"
               />
             )}
           />
         </AntForm.Item>
 
+        {/* Duration */}
         <AntForm.Item
           label="Duration"
           validateStatus={errors.duration ? "error" : ""}
@@ -129,10 +144,33 @@ const CourseModal: React.FC<CourseModalProps> = ({
           />
         </AntForm.Item>
 
+        {/* Lessons in a Week */}
         <AntForm.Item
           label="Lessons per Week"
           validateStatus={errors.lessons_in_a_week ? "error" : ""}
           help={errors.lessons_in_a_week?.message}
+        >
+          <Controller
+            name="lessons_in_a_week"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                placeholder="Select lessons per week"
+                onChange={field.onChange}
+              >
+                <Option value={3}>3</Option>
+                <Option value={5}>5</Option>
+              </Select>
+            )}
+          />
+        </AntForm.Item>
+
+        {/* Lessons in a Month */}
+        <AntForm.Item
+          label="Lessons per Month"
+          validateStatus={errors.lessons_in_a_month ? "error" : ""}
+          help={errors.lessons_in_a_month?.message}
         >
           <Controller
             name="lessons_in_a_month"
@@ -140,16 +178,18 @@ const CourseModal: React.FC<CourseModalProps> = ({
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Select number of lessons per month"
-                allowClear
+                placeholder="Select lessons per month"
+                onChange={field.onChange}
               >
                 <Option value={12}>12</Option>
+                <Option value={16}>16</Option>
                 <Option value={20}>20</Option>
               </Select>
             )}
           />
         </AntForm.Item>
 
+        {/* Lesson Duration */}
         <AntForm.Item
           label="Lesson Duration (minutes)"
           validateStatus={errors.lesson_duration ? "error" : ""}
@@ -162,7 +202,7 @@ const CourseModal: React.FC<CourseModalProps> = ({
               <Select
                 {...field}
                 placeholder="Select lesson duration"
-                allowClear
+                onChange={field.onChange}
               >
                 <Option value={120}>2 hours</Option>
                 <Option value={180}>3 hours</Option>
@@ -173,6 +213,7 @@ const CourseModal: React.FC<CourseModalProps> = ({
           />
         </AntForm.Item>
 
+        {/* Description */}
         <AntForm.Item
           label="Description"
           validateStatus={errors.description ? "error" : ""}
@@ -185,14 +226,14 @@ const CourseModal: React.FC<CourseModalProps> = ({
               <Input.TextArea
                 {...field}
                 rows={4}
-                placeholder="Enter course description"
+                placeholder="Enter description"
               />
             )}
           />
         </AntForm.Item>
 
         <Button type="primary" htmlType="submit" block>
-          Save
+          {editData ? "Update Course" : "Create Course"}
         </Button>
       </AntForm>
     </Modal>

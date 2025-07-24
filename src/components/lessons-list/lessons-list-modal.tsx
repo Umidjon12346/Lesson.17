@@ -37,7 +37,7 @@ const LessonModal: React.FC<LessonModalProps> = ({
       <div className="mb-4">
         <label>Status:</label>
         <Select
-          value={status} // ✅ value qo‘shildi
+          value={status} 
           onChange={onChangeStatus}
           className="w-full mt-1"
         >

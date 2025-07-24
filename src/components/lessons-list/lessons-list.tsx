@@ -1,7 +1,7 @@
 import { Button, message, Tooltip } from "antd";
 import { useRef, useState } from "react";
 import LessonModal from "./lessons-list-modal";
-import dayjs from "dayjs"
+import dayjs from "dayjs";
 import { useGeneral } from "../../hooks";
 
 function LessonLists({ lessons }: any) {
@@ -11,8 +11,8 @@ function LessonLists({ lessons }: any) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("pending");
   const [description, setDescription] = useState("");
-  const {updateLessonStatus} = useGeneral()
-  const {mutate:updateFn} = updateLessonStatus()
+  const { updateLessonStatus } = useGeneral();
+  const { mutate: updateFn } = updateLessonStatus();
 
   const handleScroll = () => {
     if (containerRef.current) {
@@ -50,31 +50,46 @@ function LessonLists({ lessons }: any) {
     setIsModalOpen(true);
   };
 
-const handleModalOk = () => {
-  if (!selectedLesson) return;
+  const handleModalOk = () => {
+    if (!selectedLesson) return;
 
- updateFn(
-   {
-     id: selectedLesson.id,
-     status,
-     note: description,
-   },
-   {
-     onSuccess: () => {
-       message.success("Dars holati muvaffaqiyatli o'zgartirildi");
-     },
-     onError: () => {
-       message.error("Xatolik yuz berdi");
-     },
-   }
- );
+    updateFn(
+      {
+        id: selectedLesson.id,
+        status,
+        note: description,
+      },
+      {
+        onSuccess: () => {
+          message.success("Dars holati muvaffaqiyatli o'zgartirildi");
+        },
+        onError: () => {
+          message.error("Xatolik yuz berdi");
+        },
+      }
+    );
 
-  setIsModalOpen(false);
-};
-
+    setIsModalOpen(false);
+  };
 
   const handleModalCancel = () => {
     setIsModalOpen(false);
+  };
+
+  // Holatga qarab rang belgilovchi funksiya
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "bekor qilingan":
+        return "bg-red-400";
+      case "kechiktirilgan":
+        return "bg-yellow-400";
+      case "yakunlangan":
+        return "bg-green-200";
+      case "yangi":
+        return "bg-[#ccc]";
+      default:
+        return "bg-[#ccc]";
+    }
   };
 
   return (
@@ -89,11 +104,24 @@ const handleModalOk = () => {
         onScroll={handleScroll}
       >
         {lessons.map((lesson: any, index: number) => {
-            const formatDate = dayjs(lesson.date).format("MM.DD")
+          const formatDate = dayjs(lesson.date).format("MM.DD");
+          const bgColor = getStatusColor(lesson.status);
+          console.log(lessons.note);
+      
           return (
-            <Tooltip key={lesson.id} title={`Dars ${index + 1}`}>
+            <Tooltip
+              key={lesson.id}
+              title={
+                <>
+                  <div>
+                    <strong>Dars {index + 1}</strong>
+                  </div>
+                  {lesson.note && <div>{lesson.note}</div>}
+                </>
+              }
+            >
               <div
-                className="min-w-[40px] max-w-[40px] h-[30px] bg-[#ccc] rounded-sm flex items-center justify-center cursor-pointer"
+                className={`min-w-[40px] max-w-[40px] h-[30px] ${bgColor} rounded-sm flex items-center justify-center cursor-pointer`}
                 onClick={() => handleLessonClick(lesson, index)}
               >
                 <span>{formatDate}</span>
@@ -106,7 +134,6 @@ const handleModalOk = () => {
       <Button type="primary" onClick={goNext} disabled={isEndDisabled()}>
         next
       </Button>
-
 
       <LessonModal
         open={isModalOpen}
