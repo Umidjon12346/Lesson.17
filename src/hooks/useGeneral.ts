@@ -18,12 +18,21 @@ export const useGeneral = () => {
     searchParams.set("limit", pageSize!.toString());
     navigate({ search: `?${searchParams.toString()}` });  
   };
-  const updateLessonStatus = () => {
-    return useMutation({
-      mutationFn: ({  id }: {  id: number }) =>
-        GeneralService.updateLessonStatus(id),
-    });
-  };
+const updateLessonStatus = () => {
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+      description,
+    }: {
+      id: number;
+      status: string;
+      description: string;
+    }) => GeneralService.updateLessonStatus(id, { status, description }),
+  });
+};
+
+
 
   return {
     handleTableChanges,

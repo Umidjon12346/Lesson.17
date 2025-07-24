@@ -19,7 +19,7 @@ interface LessonModalProps {
 const LessonModal: React.FC<LessonModalProps> = ({
   open,
   lesson,
-  status,
+  // status,
   description,
   onChangeStatus,
   onChangeDescription,
@@ -38,7 +38,7 @@ const LessonModal: React.FC<LessonModalProps> = ({
       <div className="mb-4">
         <label>Status:</label>
         <Select
-          value={status}
+          
           onChange={onChangeStatus}
           className="w-full mt-1"
         >

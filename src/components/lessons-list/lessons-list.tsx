@@ -1,8 +1,8 @@
-import { Button, Tooltip } from "antd";
+import { Button, message, Tooltip } from "antd";
 import { useRef, useState } from "react";
 import LessonModal from "./lessons-list-modal";
 import dayjs from "dayjs"
-// import { useGeneral } from "../../hooks";
+import { useGeneral } from "../../hooks";
 
 function LessonLists({ lessons }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,8 +11,8 @@ function LessonLists({ lessons }: any) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("pending");
   const [description, setDescription] = useState("");
-  // const {updateLessonStatus} = useGeneral()
-  // const {mutate:updateFn} = updateLessonStatus()
+  const {updateLessonStatus} = useGeneral()
+  const {mutate:updateFn} = updateLessonStatus()
 
   const handleScroll = () => {
     if (containerRef.current) {
@@ -50,10 +50,28 @@ function LessonLists({ lessons }: any) {
     setIsModalOpen(true);
   };
 
-  const handleModalOk = () => {
-    // updateFn({id})
-    setIsModalOpen(false);
-  };
+const handleModalOk = () => {
+  if (!selectedLesson) return;
+
+ updateFn(
+   {
+     id: selectedLesson.id,
+     status,
+     description,
+   },
+   {
+     onSuccess: () => {
+       message.success("Dars holati muvaffaqiyatli o'zgartirildi");
+     },
+     onError: () => {
+       message.error("Xatolik yuz berdi");
+     },
+   }
+ );
+
+  setIsModalOpen(false);
+};
+
 
   const handleModalCancel = () => {
     setIsModalOpen(false);
