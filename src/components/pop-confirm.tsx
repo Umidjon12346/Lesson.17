@@ -15,9 +15,7 @@ const PopConfirm: React.FC<PopConfirmProps> = ({ onDelete }) => (
     cancelText="No"
     onConfirm={onDelete}
   >
-    <Button danger>
-      <DeleteOutlined />
-    </Button>
+    <Button danger icon={<DeleteOutlined />}></Button>
   </Popconfirm>
 );
 

@@ -48,6 +48,8 @@ const GroupModal: React.FC<GroupModalProps> = ({
     },
   });
 
+  console.log(editData);
+  
   const { createGroupMutation, updateGroupMutation } = useGroup({});
   const { mutate: updatefn } = updateGroupMutation();
   const { mutate: createfn } = createGroupMutation();
@@ -72,12 +74,13 @@ const GroupModal: React.FC<GroupModalProps> = ({
   const onSubmit = async (values: Group) => {
     const payload = {
       name: values.name,
-      course_id: values.course_id,
+      course_id: values.id,
       status: values.status,
       start_date: values.start_date,
       end_date: values.end_date,
     };
 
+    
     try {
       if (editData) {
         updatefn({ data: payload, id: editData.id! }); // await ishlaydi

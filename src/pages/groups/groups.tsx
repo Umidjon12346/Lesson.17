@@ -26,6 +26,7 @@ function Groups() {
   const { mutate: deleteGroup } = useDeleteGroup();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<GroupWithId | null>(null);
+    
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -39,7 +40,6 @@ function Groups() {
     }
   }, [location.search]);
 
-  console.log(data);
 
   const onTableChange = (pagination: TablePaginationConfig) => {
     handleTableChanges({ pagination, setParams });
@@ -80,6 +80,8 @@ function Groups() {
     },
   ];
 
+  
+
   return (
     <div>
       <div
@@ -106,7 +108,7 @@ function Groups() {
         columns={columns}
         dataSource={data?.data.data}
         loading={loading}
-        rowKey={(record) => record.id ?? `${record.name}-${record.course_id}`}
+        rowKey={(record) => record.id ?? `${record.name}-${record.id}`}
         pagination={{
           current: params.page,
           pageSize: params.limit,

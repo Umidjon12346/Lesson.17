@@ -5,17 +5,15 @@ import * as Yup from "yup";
 import type { Teacher } from "../../types/teacher";
 import { useTeachers } from "../../hooks/useTeacher";
 import { MaskedInput } from "antd-mask-input";
+import { useBranches } from "../../hooks";
 
-interface Branch {
-  id: number | undefined;
-  name: string;
-}
+
 
 interface TeacherModalProps {
   visible: boolean;
   onClose: () => void;
-  editData?: Teacher;
-  branches: Branch[];
+  editData?: any;
+
 }
 
 const roles = ["main teacher", "assistant"];
@@ -43,23 +41,31 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
   visible,
   onClose,
   editData,
-  branches,
 }) => {
   const isEdit = !!editData;
 
-  const initialValues: Teacher = {
+ 
+  
+
+  const initialValues: any = {
     first_name: editData?.first_name || "",
     last_name: editData?.last_name || "",
     email: editData?.email || "",
     password: "",
     phone: editData?.phone || "",
     role: editData?.role || "",
-    branchId: editData?.branchId || [],
+    branchId: editData?.branches.id || [],
   };
+  console.log(initialValues);
+  
 
   const { useTeacherCreate, useTeacherUpdate } = useTeachers({});
   const { mutate: createfn } = useTeacherCreate();
   const { mutate: updatefn } = useTeacherUpdate();
+  const {data} = useBranches({})
+  const branches = data?.data.branch
+  console.log(data);
+  
 
   const handleSubmit = async (values: Teacher) => {
     const { password, ...rest } = values;
@@ -196,7 +202,7 @@ const TeacherModal: React.FC<TeacherModalProps> = ({
                     style={{ width: "100%" }}
                     placeholder="Select branch(es)"
                   >
-                    {branches.map((branch) => (
+                    {branches.map((branch:any) => (
                       <Select.Option key={branch.id} value={branch.id}>
                         {branch.name}
                       </Select.Option>

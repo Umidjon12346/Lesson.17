@@ -17,8 +17,8 @@ function GroupStudents({ students }: any) {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Students</h2>
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-lg font-semibold ">Students</h2>
         <Space>
           <Button type="primary" onClick={handleAddStudent}>
             + Add Student
@@ -26,13 +26,13 @@ function GroupStudents({ students }: any) {
           <Button onClick={handleAddTeacher}>+ Add Teacher</Button>
         </Space>
       </div>
-      <Collapse accordion>
+      <Collapse accordion className="mt-2">
         {students.map((item: any) => {
           const student = item.student;
           const fullName = `${student.first_name} ${student.last_name}`;
           return (
             <Panel header={fullName} key={student.id}>
-              <Card>
+              <Card className="mb-2 shadow border rounded">
                 <p>
                   <strong>F.I.Sh:</strong> {fullName}
                 </p>

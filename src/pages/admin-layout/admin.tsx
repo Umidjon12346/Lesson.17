@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Dropdown, Layout, Menu, theme, Avatar } from "antd";
 import {
   LogoutOutlined,
   TeamOutlined,
   BookOutlined,
   HomeOutlined,
+  UserOutlined,
+  SettingOutlined,
+  DownOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { clearStorage } from "../../helpers";
+import type { MenuProps } from "antd/lib";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -33,7 +37,7 @@ const items = [
     icon: <TeamOutlined />,
   },
   {
-    label: "Branchs",
+    label: "Branches",
     key: "/admin/branch",
     icon: <HomeOutlined />,
   },
@@ -53,6 +57,45 @@ function Admin() {
     clearStorage();
     navigate("/");
   };
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    switch (key) {
+      case "profile":
+        navigate("/admin/profile");
+        break;
+      case "settings":
+        navigate("/admin/settings");
+        break;
+      case "logout":
+        logout();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const userMenuItems: MenuProps["items"] = [
+    {
+      key: "profile",
+      icon: <UserOutlined />,
+      label: "Profile",
+    },
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: "Settings",
+    },
+    {
+      type: "divider" as const,
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      danger: true,
+    },
+  ];
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -79,7 +122,7 @@ function Admin() {
             fontWeight: "bold",
           }}
         >
-          Admin Panel
+          {collapsed ? "AP" : "Admin Panel"}
         </div>
         <Menu
           theme="dark"
@@ -87,7 +130,6 @@ function Admin() {
           selectedKeys={[location.pathname]}
           onClick={({ key }) => navigate(key)}
           items={items}
-          
         />
       </Sider>
 
@@ -102,11 +144,20 @@ function Admin() {
             height: 64,
           }}
         >
-          <Button
-            type="primary"
-            icon={<LogoutOutlined />}
-            onClick={logout}
-          ></Button>
+          <Dropdown
+            menu={{ items: userMenuItems, onClick: handleMenuClick }}
+            placement="bottomRight"
+            trigger={["click"]}
+          >
+            <Button
+              type="text"
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              <Avatar size="small" icon={<UserOutlined />} />
+              <span>Admin</span>
+              <DownOutlined />
+            </Button>
+          </Dropdown>
         </Header>
 
         <Content style={{ padding: 24 }}>

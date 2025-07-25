@@ -7,7 +7,6 @@ import { PopConfirm } from "../../components";
 import { EditOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import { useGeneral, useTeachers } from "../../hooks";
-import { useBranches } from "../../hooks/useBranches";
 
 function TeacherPage() {
   const [loading] = useState(false);
@@ -20,11 +19,8 @@ function TeacherPage() {
 
   const { data: teachersData, useTeacherDelete } = useTeachers(params);
   const { mutate: deleteTeacher } = useTeacherDelete();
-  const { data: branchData } = useBranches({});
-  const branches = branchData?.data.branch;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<Teacher | null>(null);
-  console.log(teachersData);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -70,9 +66,8 @@ function TeacherPage() {
               setEditData(record);
               setIsModalOpen(true);
             }}
-          >
-            <EditOutlined />
-          </Button>
+            icon={<EditOutlined />}
+          ></Button>
           <PopConfirm onDelete={() => handleDelete(record.id!)} />
         </div>
       ),
@@ -122,7 +117,6 @@ function TeacherPage() {
           setIsModalOpen(false);
           setEditData(null);
         }}
-        branches={branches}
         editData={editData ?? undefined}
       />
     </div>
