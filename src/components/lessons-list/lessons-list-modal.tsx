@@ -41,10 +41,10 @@ const LessonModal: React.FC<LessonModalProps> = ({
           onChange={onChangeStatus}
           className="w-full mt-1"
         >
-          <Option value="yangi">Yangi</Option>
-          <Option value="bekor qilingan">Bekor qilingan</Option>
-          <Option value="kechiktirilgan">Kechiktirilgan</Option>
-          <Option value="yakunlangan">Yakunlangan</Option>
+          <Option value="new">Yangi</Option>
+          <Option value="active">Faol</Option>
+          <Option value="cancelled">Bekor qilingan</Option>
+          <Option value="completed">Yakunlangan</Option>
         </Select>
       </div>
 

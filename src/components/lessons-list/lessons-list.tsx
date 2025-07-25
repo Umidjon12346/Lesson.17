@@ -1,8 +1,9 @@
 import { Button, message, Tooltip } from "antd";
 import { useRef, useState } from "react";
-import LessonModal from "./lessons-list-modal";
 import dayjs from "dayjs";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useGeneral } from "../../hooks";
+import LessonModal from "./lessons-list-modal";
 
 function LessonLists({ lessons }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -76,10 +77,9 @@ function LessonLists({ lessons }: any) {
     setIsModalOpen(false);
   };
 
-  // Holatga qarab rang belgilovchi funksiya
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "bekor qilingan":
+      case "cancelled":
         return "bg-red-400";
       case "kechiktirilgan":
         return "bg-yellow-400";
@@ -88,53 +88,81 @@ function LessonLists({ lessons }: any) {
       case "yangi":
         return "bg-[#ccc]";
       default:
-        return "bg-[#ccc]";
+        return;
     }
   };
 
   return (
-    <div className="flex gap-2 items-center">
-      <Button type="primary" onClick={goPrev} disabled={isStartDisabled()}>
-        prev
-      </Button>
-
-      <div
-        className="overflow-scroll flex gap-1 [&::-webkit-scrollbar]:hidden"
-        ref={containerRef}
-        onScroll={handleScroll}
-      >
-        {lessons.map((lesson: any, index: number) => {
-          const formatDate = dayjs(lesson.date).format("MM.DD");
-          const bgColor = getStatusColor(lesson.status);
-          console.log(lessons.note);
-      
-          return (
-            <Tooltip
-              key={lesson.id}
-              title={
-                <>
-                  <div>
-                    <strong>Dars {index + 1}</strong>
-                  </div>
-                  {lesson.note && <div>{lesson.note}</div>}
-                </>
-              }
-            >
-              <div
-                className={`min-w-[40px] max-w-[40px] h-[30px] ${bgColor} rounded-sm flex items-center justify-center cursor-pointer`}
-                onClick={() => handleLessonClick(lesson, index)}
-              >
-                <span>{formatDate}</span>
-              </div>
-            </Tooltip>
-          );
-        })}
+    <div className="relative mt-6">
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="text-xl font-bold text-gray-800 mb-1">
+          Darslar Jadvali
+        </h2>
+        <p className="text-sm text-gray-500">Jami {lessons.length} ta dars</p>
       </div>
 
-      <Button type="primary" onClick={goNext} disabled={isEndDisabled()}>
-        next
-      </Button>
+      {/* Container */}
+      <div className="relative bg-white rounded-2xl  overflow-hidden">
+        {/* Gradient Overlays */}
+        <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
+        {/* Lesson List */}
+        <div className="flex items-center p-4 gap-2">
+          {/* Prev Button */}
+          <Button
+            shape="circle"
+            icon={<LeftOutlined />}
+            onClick={goPrev}
+            disabled={isStartDisabled()}
+          />
+
+          {/* Scrollable Lessons */}
+          <div
+            ref={containerRef}
+            onScroll={handleScroll}
+            className="flex-1 overflow-x-auto overflow-y-hidden py-2 px-1 flex gap-3 scroll-smooth [&::-webkit-scrollbar]:hidden"
+          >
+            {lessons.map((lesson: any, index: number) => {
+              const formattedDate = dayjs(lesson.date).format("DD.MM");
+              const dayName = dayjs(lesson.date).format("ddd").toUpperCase();
+              const statusColor = getStatusColor(lesson.status);
+
+              return (
+                <Tooltip
+                  key={lesson.id}
+                  title={
+                    <div className="text-center">
+                      <div className="font-semibold">Dars {index + 1}</div>
+                    </div>
+                  }
+                >
+                  <div
+                    className={`
+                      min-w-[70px] h-[70px] 
+                      ${statusColor} rounded-xl flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-all`}
+                    onClick={() => handleLessonClick(lesson, index)}
+                  >
+                    <div className="text-xs opacity-75">{dayName}</div>
+                    <div className="text-sm font-bold">{formattedDate}</div>
+                  </div>
+                </Tooltip>
+              );
+            })}
+          </div>
+
+          {/* Next Button */}
+          <Button
+            shape="circle"
+            icon={<RightOutlined />}
+            onClick={goNext}
+            disabled={isEndDisabled()}
+          />
+        </div>
+      </div>
+
+      {/* Modal */}
       <LessonModal
         open={isModalOpen}
         lesson={selectedLesson}

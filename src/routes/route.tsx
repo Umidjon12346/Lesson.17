@@ -21,6 +21,7 @@ import {
   SingleGroup,
   NotFound,
 } from "../pages";
+import AppReducer from "../pages/app"
 
 const App = lazy(() => import("../App"));
 
@@ -53,6 +54,7 @@ function Router() {
           <Route path="teacher" element={<TeacherLayout />} />
           <Route path="branch" element={<BranchLayout />} />
           <Route path="rooms" element={<RoomLayout />} />
+          <Route path="app" element={<AppReducer />} />
         </Route>
 
         {/* STUDENT */}
