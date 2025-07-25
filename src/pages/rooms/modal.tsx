@@ -43,11 +43,13 @@ const RoomModal: React.FC<RoomModalProps> = ({
   } = useForm<Room>({
     defaultValues: {
       name: update?.name || "",
-      branchId: update?.branchId || 0,
+      branchId: update?.branch?.id || 0,
       capacity: update?.capacity || 0,
     },
     resolver: yupResolver(RoomValidation),
   });
+  console.log(update);
+  
 
   const onSubmit = (values: Room) => {
     if (mode === "create") {

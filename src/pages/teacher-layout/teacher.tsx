@@ -97,7 +97,7 @@ function TeacherPage() {
 
       <Table<Teacher>
         bordered
-        dataSource={teachersData?.data.teachers || []}
+        dataSource={teachersData?.data.data || []}
         columns={columns}
         loading={loading}
         rowKey={(record) => record.id!}
