@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Table } from "antd";
+import { Button, Table, Tooltip } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { Teacher } from "../../types/teacher";
 import TeacherModal from "./teacher-modal";
@@ -49,13 +49,23 @@ function TeacherPage() {
     { title: "Phone", dataIndex: "phone", key: "phone" },
     { title: "Role", dataIndex: "role", key: "role" },
     {
-      title: "Branches",
-      key: "branches",
-      render: (_, record: any) =>
-        record.branches?.length
-          ? record.branches.map((b: any) => b.name).join(", ")
-          : "-",
+      title: "Branch",
+      key: "branchId",
+      render: (record: any) => {
+        const branches = record?.branches || [];
+
+        if (branches.length === 0) return <span>—</span>;
+
+        const firstBranch = branches[0]?.name;
+
+        return (
+          <Tooltip title={branches.map((b: any) => b.name).join(", ")}>
+            <span style={{ cursor: "pointer" }}>{firstBranch}</span>
+          </Tooltip>
+        );
+      },
     },
+
     {
       title: "Actions",
       key: "actions",

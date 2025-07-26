@@ -1,148 +1,185 @@
-
-// import { Card, Avatar, Tag } from "antd";
+// import {  Avatar, Tag, Collapse, Badge } from "antd";
 // import {
 //   UserOutlined,
-
+//   TeamOutlined,
+//   DownOutlined,
+//   RightOutlined,
 // } from "@ant-design/icons";
 
-// function GroupTeachers({ teachers }: any) {
-//   console.log(teachers);
-  
-//   return (
-//     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-//       {teachers.map((item: any) => {
-//         const { teacher} = item;
-//         const fullName = `${teacher.first_name} ${teacher.last_name}`;
-//         const avatar = teacher.avatar_url || "";
-
-//         return (
-//           <Card
-//             key={teacher.id}
-//             className="rounded-2xl shadow-lg hover:shadow-2xl transition duration-300"
-//             style={{ padding: "24px" }}
-//           >
-//             <div className="flex flex-col items-center text-center">
-//               <Avatar
-//                 size={96}
-//                 src={avatar || undefined}
-//                 icon={!avatar && <UserOutlined />}
-//                 className="mb-4"
-//               />
-//               <h2 className="text-xl font-semibold mb-1">{fullName}</h2>
-//               <div className="mb-2 text-gray-500 text-sm">{teacher.role}</div>
-
-//               <div className="flex flex-wrap justify-center gap-2 my-2">
-//                 <Tag color={teacher.is_active ? "green" : "red"}>
-//                   {teacher.is_active ? "Faol" : "Nofaol"}
-//                 </Tag>
-//               </div>
-//             </div>
-//           </Card>
-//         );
-//       })}
-//     </div>
-//   );
-// }
-
-// export default GroupTeachers;
-
-
-// import { Card, Avatar, Tag } from "antd";
-// import { UserOutlined } from "@ant-design/icons";
+// const { Panel } = Collapse;
 
 // function GroupTeachers({ teachers }: any) {
-//   const activeTeachers = teachers.filter(
+//   // Count active teachers
+//   const activeTeachersCount = teachers.filter(
 //     (item: any) => item.teacher?.is_active
+//   ).length;
+
+//   const renderTeacherCard = (item: any) => {
+//     const { teacher } = item;
+//     const fullName = `${teacher.first_name} ${teacher.last_name}`;
+//     const avatar = teacher.avatar_url || "";
+
+//     return (
+//       <div
+//         key={teacher.id}
+//         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+//       >
+//         <div className="flex items-center gap-3">
+//           <Avatar
+//             size={40}
+//             src={avatar || undefined}
+//             icon={!avatar && <UserOutlined />}
+//           />
+//           <div>
+//             <div className="font-medium text-gray-900">{fullName}</div>
+//             <div className="text-sm text-gray-500">{teacher.role}</div>
+//           </div>
+//         </div>
+//         <Tag color={teacher.is_active ? "green" : "red"}>
+//           {teacher.is_active ? "Faol" : "Nofaol"}
+//         </Tag>
+//       </div>
+//     );
+//   };
+
+//   const customExpandIcon = ({ isActive }: { isActive?: boolean }) => (
+//     <div className="flex items-center gap-2">
+//       {isActive ? <DownOutlined /> : <RightOutlined />}
+//     </div>
 //   );
 
 //   return (
-//     <div className="grid grid-rows-1 sm:grid-rows-2 lg:grid-rows-3 gap-6 p-4">
-//       {activeTeachers.map((item: any) => {
-//         const { teacher } = item;
-//         const fullName = `${teacher.first_name} ${teacher.last_name}`;
-//         const avatar = teacher.avatar_url || "";
-
-//         return (
-//           <Card
-//             key={teacher.id}
-//             className="rounded-2xl shadow-md hover:shadow-xl transition-all duration-300"
-//           >
-//             <div className="flex items-center gap-4">
-//               <Avatar
-//                 size={64}
-//                 src={avatar || undefined}
-//                 icon={!avatar && <UserOutlined />}
-//               />
-//               <div>
-//                 <h3 className="text-lg font-semibold">{fullName}</h3>
-//                 <Tag color={teacher.is_active ? "green" : "red"}>
-//                   {teacher.is_active ? "Faol" : "Nofaol"}
-//                 </Tag>
-//               </div>
+//     <Collapse
+//       ghost
+//       expandIcon={customExpandIcon}
+//       className="bg-white rounded-lg shadow-sm"
+//     >
+//       <Panel
+//         header={
+//           <div className="flex items-center justify-between w-full pr-4">
+//             <div className="flex items-center gap-3">
+//               <TeamOutlined className="text-blue-500" />
+//               <span className="font-semibold text-gray-700">O'qituvchilar</span>
 //             </div>
-//           </Card>
-//         );
-//       })}
-//     </div>
+//             <div className="flex items-center gap-2">
+//               <Badge
+//                 count={activeTeachersCount}
+//                 style={{ backgroundColor: "#52c41a" }}
+//               />
+//               <span className="text-sm text-gray-500">
+//                 Jami: {teachers.length}
+//               </span>
+//             </div>
+//           </div>
+//         }
+//         key="teachers"
+//       >
+//         <div className="space-y-3 mt-2">
+//           {teachers.length > 0 ? (
+//             teachers.map((item: any) => renderTeacherCard(item))
+//           ) : (
+//             <div className="text-center py-8 text-gray-500">
+//               <TeamOutlined className="text-4xl mb-2" />
+//               <p>Hech qanday o'qituvchi topilmadi</p>
+//             </div>
+//           )}
+//         </div>
+//       </Panel>
+//     </Collapse>
 //   );
 // }
 
 // export default GroupTeachers;
-
-
-
-import { Card, Avatar, Tag } from "antd";
-import { UserOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
+import { Avatar, Tag, Collapse, Badge } from "antd";
+import {
+  UserOutlined,
+  TeamOutlined,
+  DownOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 
 function GroupTeachers({ teachers }: any) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {teachers.map((item: any) => {
-        const { teacher, start_date, end_date } = item;
-        const fullName = `${teacher.first_name} ${teacher.last_name}`;
-        const avatar = teacher.avatar_url || "";
+  // Count active teachers
+  const activeTeachersCount = teachers.filter(
+    (item: any) => item.teacher?.is_active
+  ).length;
 
-        return (
-          <Card
-            key={teacher.id}
-            title={fullName}
-            bordered
-            className="shadow-md rounded-2xl"
-          >
-            <Card.Meta
-              avatar={
-                avatar ? (
-                  <Avatar src={avatar} />
-                ) : (
-                  <Avatar icon={<UserOutlined />} />
-                )
-              }
-              description={
-                <div className="space-y-2 mt-2 text-sm">
-                  <div>
-                    <MailOutlined className="mr-2" />
-                    {teacher.email}
-                  </div>
-                  <div>
-                    <PhoneOutlined className="mr-2" />
-                    {teacher.phone}
-                  </div>
-                  <div>
-                    <Tag color="blue">{teacher.role}</Tag>
-                    <Tag color={teacher.is_active ? "green" : "red"}>
-                      {teacher.is_active ? "Faol" : "Nofaol"}
-                    </Tag>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {start_date} - {end_date}
-                  </div>
-                </div>
-              }
-            />
-          </Card>
-        );
-      })}
+  const renderTeacherCard = (item: any) => {
+    const { teacher } = item;
+    const fullName = `${teacher.first_name} ${teacher.last_name}`;
+    const avatar = teacher.avatar_url || "";
+
+    return (
+      <div
+        key={teacher.id}
+        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+      >
+        <div className="flex items-center gap-3">
+          <Avatar
+            size={40}
+            src={avatar || undefined}
+            icon={!avatar && <UserOutlined />}
+          />
+          <div>
+            <div className="font-medium text-gray-900">{fullName}</div>
+            <div className="text-sm text-gray-500">{teacher.role}</div>
+          </div>
+        </div>
+        <Tag color={teacher.is_active ? "green" : "red"}>
+          {teacher.is_active ? "Faol" : "Nofaol"}
+        </Tag>
+      </div>
+    );
+  };
+
+  const customExpandIcon = ({ isActive }: { isActive?: boolean }) => (
+    <div className="flex items-center gap-2">
+      {isActive ? <DownOutlined /> : <RightOutlined />}
     </div>
+  );
+
+  const items = [
+    {
+      key: "teachers",
+      label: (
+        <div className="flex items-center justify-between w-full pr-4">
+          <div className="flex items-center gap-3">
+            <TeamOutlined className="text-blue-500" />
+            <span className="font-semibold text-gray-700">Teachers</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge
+              count={activeTeachersCount}
+              style={{ backgroundColor: "#52c41a" }}
+            />
+            <span className="text-sm text-gray-500">
+              All: {teachers.length}
+            </span>
+          </div>
+        </div>
+      ),
+      children: (
+        <div className="space-y-3 mt-2">
+          {teachers.length > 0 ? (
+            teachers.map((item: any) => renderTeacherCard(item))
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <TeamOutlined className="text-4xl mb-2" />
+              <p>Hech qanday o'qituvchi topilmadi</p>
+            </div>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <Collapse
+      ghost
+      expandIcon={customExpandIcon}
+      className="bg-white rounded-lg shadow-sm"
+      items={items}
+    />
   );
 }
 

@@ -72,9 +72,8 @@ function Student() {
               setEditData(record);
               setIsModalOpen(true);
             }}
-          >
-            <EditOutlined />
-          </Button>
+            icon={<EditOutlined />}
+          ></Button>
           <PopConfirm onDelete={() => handleDelete(record.id!)} />
         </div>
       ),

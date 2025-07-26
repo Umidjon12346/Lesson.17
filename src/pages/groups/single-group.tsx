@@ -3,6 +3,7 @@ import { useGroup } from "../../hooks";
 import GroupStudents from "../../components/group/students";
 import GroupTeachers from "../../components/group/teachers";
 import GroupLessons from "../../components/group/lessons";
+import GroupInfo from "../../components/group/info";
 
 const SingleGroup = () => {
   const { id } = useParams();
@@ -12,16 +13,18 @@ const SingleGroup = () => {
     return <div>Noto‘g‘ri guruh ID</div>;
   }
 
-  const { students, teachers, lessons } = useGroup(
+  const { students, teachers, lessons,  } = useGroup(
     { page: 1, limit: 10 },
     groupId
   );
 
+  
   return (
     <div className="flex flex-col gap-9">
       {teachers?.data?.length > 0 && (
         <GroupTeachers teachers={teachers?.data} />
       )}
+
       {lessons?.data?.lessons?.length > 0 && (
         <GroupLessons lessons={lessons?.data.lessons} />
       )}
@@ -31,6 +34,7 @@ const SingleGroup = () => {
           lesson={lessons?.data.lessons}
         />
       )}
+      {<GroupInfo  />}
     </div>
   );
 };
