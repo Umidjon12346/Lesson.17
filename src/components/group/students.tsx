@@ -1,52 +1,81 @@
-import { Collapse, Card, Button, Space } from "antd";
+import { Button, Space, Table } from "antd";
+import { useState } from "react";
+import AddStudentToGroupModal from "./add-student";
+import { useStudent } from "../../hooks/useStudent";
 
-const { Panel } = Collapse;
+function GroupStudents({
+  students,
+  groupId,
+}: {
+  students: any[];
+  groupId: number;
+}) {
+  const [open, setOpen] = useState(false);
 
-function GroupStudents({ students }: any) {
-  console.log(students);
+  const { data } = useStudent({ page: 1, limit: 20 });
+  const allStudents = data?.data.data || []
+  console.log(data);
+  
+  
 
   const handleAddStudent = () => {
-    console.log("Add Student clicked");
-    // student qo‘shish logikasi
+    setOpen(true); // Modalni ochadi
   };
 
-  const handleAddTeacher = () => {
-    console.log("Add Teacher clicked");
-    // teacher qo‘shish logikasi
-  };
+  const columns = [
+    {
+      title: "Full Name",
+      dataIndex: "fullName",
+      key: "fullName",
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+  ];
+
+  const dataSource = students.map((item: any) => {
+    const student = item.student;
+    return {
+      key: student.id,
+      fullName: `${student.first_name} ${student.last_name}`,
+      phone: student.phone,
+      email: student.email,
+    };
+  });
+  
 
   return (
-    <div>
+    <div className="m-1">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg font-semibold ">Students</h2>
+        <h2 className="text-lg font-semibold">Students</h2>
         <Space>
           <Button type="primary" onClick={handleAddStudent}>
             + Add Student
           </Button>
-          <Button onClick={handleAddTeacher}>+ Add Teacher</Button>
         </Space>
       </div>
-      <Collapse accordion className="mt-2">
-        {students.map((item: any) => {
-          const student = item.student;
-          const fullName = `${student.first_name} ${student.last_name}`;
-          return (
-            <Panel header={fullName} key={student.id}>
-              <Card className="mb-2 shadow border rounded">
-                <p>
-                  <strong>F.I.Sh:</strong> {fullName}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {student.phone}
-                </p>
-                <p>
-                  <strong>Email:</strong> {student.email}
-                </p>
-              </Card>
-            </Panel>
-          );
-        })}
-      </Collapse>
+      <Table
+        className="mt-4"
+        dataSource={dataSource}
+        columns={columns}
+        pagination={false}
+        bordered
+      />
+
+      <AddStudentToGroupModal
+        open={open}
+        onCancel={() => setOpen(false)}
+        allStudents={allStudents}
+        groupStudents={students}
+        groupId={groupId}
+      />
     </div>
   );
 }

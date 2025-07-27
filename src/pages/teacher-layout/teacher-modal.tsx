@@ -13,7 +13,7 @@ interface TeacherModalProps {
   editData?: any;
 }
 
-const roles = ["main teacher", "assistant"];
+const roles = ["main teacher", "assistant teacher"];
 
 const validationSchema = (isEdit: boolean) =>
   Yup.object({

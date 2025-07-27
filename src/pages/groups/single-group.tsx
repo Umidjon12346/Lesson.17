@@ -13,16 +13,15 @@ const SingleGroup = () => {
     return <div>Noto‘g‘ri guruh ID</div>;
   }
 
-  const { students, teachers, lessons,  } = useGroup(
+  const { students, teachers, lessons } = useGroup(
     { page: 1, limit: 10 },
     groupId
   );
 
-  
   return (
     <div className="flex flex-col gap-9">
       {teachers?.data?.length > 0 && (
-        <GroupTeachers teachers={teachers?.data} />
+        <GroupTeachers teachers={teachers?.data} groupId={groupId}/>
       )}
 
       {lessons?.data?.lessons?.length > 0 && (
@@ -31,10 +30,10 @@ const SingleGroup = () => {
       {students?.data?.length > 0 && (
         <GroupStudents
           students={students?.data}
-          lesson={lessons?.data.lessons}
+          groupId={groupId}
         />
       )}
-      {<GroupInfo  />}
+      {<GroupInfo />}
     </div>
   );
 };

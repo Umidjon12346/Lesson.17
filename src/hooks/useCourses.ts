@@ -12,7 +12,7 @@ export const useCourse = (params:any) => {
       return useMutation({
         mutationFn: (data: any) => CourseService.createCourses(data),
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["groups"] });
+          queryClient.invalidateQueries({ queryKey: ["courses"] });
         },
       });
     };
@@ -21,7 +21,7 @@ export const useCourse = (params:any) => {
         mutationFn: ({ data, id }: { data: any; id: number }) =>
           CourseService.updateCourses( data,id),
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["groups"] });
+          queryClient.invalidateQueries({ queryKey: ["courses"] });
         },
       });
     };
@@ -29,7 +29,7 @@ const useDeleteCourse = () => {
   return useMutation({
     mutationFn: async (id: number) => CourseService.deleteCourses(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student"] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
   });
 };

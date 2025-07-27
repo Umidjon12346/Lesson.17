@@ -1,105 +1,28 @@
-// import {  Avatar, Tag, Collapse, Badge } from "antd";
-// import {
-//   UserOutlined,
-//   TeamOutlined,
-//   DownOutlined,
-//   RightOutlined,
-// } from "@ant-design/icons";
-
-// const { Panel } = Collapse;
-
-// function GroupTeachers({ teachers }: any) {
-//   // Count active teachers
-//   const activeTeachersCount = teachers.filter(
-//     (item: any) => item.teacher?.is_active
-//   ).length;
-
-//   const renderTeacherCard = (item: any) => {
-//     const { teacher } = item;
-//     const fullName = `${teacher.first_name} ${teacher.last_name}`;
-//     const avatar = teacher.avatar_url || "";
-
-//     return (
-//       <div
-//         key={teacher.id}
-//         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-//       >
-//         <div className="flex items-center gap-3">
-//           <Avatar
-//             size={40}
-//             src={avatar || undefined}
-//             icon={!avatar && <UserOutlined />}
-//           />
-//           <div>
-//             <div className="font-medium text-gray-900">{fullName}</div>
-//             <div className="text-sm text-gray-500">{teacher.role}</div>
-//           </div>
-//         </div>
-//         <Tag color={teacher.is_active ? "green" : "red"}>
-//           {teacher.is_active ? "Faol" : "Nofaol"}
-//         </Tag>
-//       </div>
-//     );
-//   };
-
-//   const customExpandIcon = ({ isActive }: { isActive?: boolean }) => (
-//     <div className="flex items-center gap-2">
-//       {isActive ? <DownOutlined /> : <RightOutlined />}
-//     </div>
-//   );
-
-//   return (
-//     <Collapse
-//       ghost
-//       expandIcon={customExpandIcon}
-//       className="bg-white rounded-lg shadow-sm"
-//     >
-//       <Panel
-//         header={
-//           <div className="flex items-center justify-between w-full pr-4">
-//             <div className="flex items-center gap-3">
-//               <TeamOutlined className="text-blue-500" />
-//               <span className="font-semibold text-gray-700">O'qituvchilar</span>
-//             </div>
-//             <div className="flex items-center gap-2">
-//               <Badge
-//                 count={activeTeachersCount}
-//                 style={{ backgroundColor: "#52c41a" }}
-//               />
-//               <span className="text-sm text-gray-500">
-//                 Jami: {teachers.length}
-//               </span>
-//             </div>
-//           </div>
-//         }
-//         key="teachers"
-//       >
-//         <div className="space-y-3 mt-2">
-//           {teachers.length > 0 ? (
-//             teachers.map((item: any) => renderTeacherCard(item))
-//           ) : (
-//             <div className="text-center py-8 text-gray-500">
-//               <TeamOutlined className="text-4xl mb-2" />
-//               <p>Hech qanday o'qituvchi topilmadi</p>
-//             </div>
-//           )}
-//         </div>
-//       </Panel>
-//     </Collapse>
-//   );
-// }
-
-// export default GroupTeachers;
-import { Avatar, Tag, Collapse, Badge } from "antd";
+import { useState } from "react";
+import { Avatar, Tag, Collapse, Badge, Button } from "antd";
 import {
   UserOutlined,
   TeamOutlined,
   DownOutlined,
   RightOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
+import AddTeacherToGroupModal from "./teacher-add"; // modalni import qilish
+import {  useTeachers } from "../../hooks";
 
-function GroupTeachers({ teachers }: any) {
-  // Count active teachers
+
+const GroupTeachers = ({
+  teachers,
+  groupId,
+}: any) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const {data} = useTeachers({page:1,limit :20})
+  const allTeachers = data?.data.data || []
+  
+  
+  
+
+
   const activeTeachersCount = teachers.filter(
     (item: any) => item.teacher?.is_active
   ).length;
@@ -123,10 +46,15 @@ function GroupTeachers({ teachers }: any) {
           <div>
             <div className="font-medium text-gray-900">{fullName}</div>
             <div className="text-sm text-gray-500">{teacher.role}</div>
+            {item.start_date && (
+              <div className="text-xs text-gray-400 mt-1">
+                Started: {new Date(item.start_date).toLocaleDateString()}
+              </div>
+            )}
           </div>
         </div>
         <Tag color={teacher.is_active ? "green" : "red"}>
-          {teacher.is_active ? "Faol" : "Nofaol"}
+          {teacher.is_active ? "Active" : "Inactive"}
         </Tag>
       </div>
     );
@@ -153,7 +81,7 @@ function GroupTeachers({ teachers }: any) {
               style={{ backgroundColor: "#52c41a" }}
             />
             <span className="text-sm text-gray-500">
-              All: {teachers.length}
+              Total: {teachers.length}
             </span>
           </div>
         </div>
@@ -165,7 +93,15 @@ function GroupTeachers({ teachers }: any) {
           ) : (
             <div className="text-center py-8 text-gray-500">
               <TeamOutlined className="text-4xl mb-2" />
-              <p>Hech qanday o'qituvchi topilmadi</p>
+              <p>No teachers found</p>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setModalOpen(true)}
+                className="mt-4"
+              >
+                + Add Teacher
+              </Button>
             </div>
           )}
         </div>
@@ -173,14 +109,36 @@ function GroupTeachers({ teachers }: any) {
     },
   ];
 
-  return (
-    <Collapse
-      ghost
-      expandIcon={customExpandIcon}
-      className="bg-white rounded-lg shadow-sm"
-      items={items}
-    />
-  );
-}
 
+
+  return (
+    <div className="w-full">
+      <div className="flex justify-end mb-3">
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setModalOpen(true)}
+        >
+          Add Teacher
+        </Button>
+      </div>
+
+      <Collapse
+        ghost
+        expandIcon={customExpandIcon}
+        className="bg-white rounded-lg shadow-sm"
+        items={items}
+        defaultActiveKey={["teachers"]}
+      />
+
+      <AddTeacherToGroupModal
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        groupTeachers={teachers}
+        allTeachers={allTeachers}
+        groupId={groupId}
+      />
+    </div>
+  );
+};
 export default GroupTeachers;

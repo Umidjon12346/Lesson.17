@@ -10,6 +10,13 @@ export interface Group {
     end_date:string,
 }
 
+export interface AddGroupTeacher {
+  groupId: number;
+  teacherId: number[];
+  status: boolean;
+  start_date: string;
+}
+
 export interface GroupTeachersType{
     teachers:Teacher[]
 }

@@ -1,6 +1,6 @@
 import { ApiUrls } from "../api/api-urls";
 import { apiConfig } from "../api/config";
-import type { Group } from "../types/group";
+import type { AddGroupTeacher, Group } from "../types/group";
 
 export const GroupService = {
   async getGroups(params: any) {
@@ -21,14 +21,23 @@ export const GroupService = {
     return res;
   },
   async getGroupLessons(id: number) {
-    const res = await apiConfig().getRequest(
-      `${ApiUrls.GROUP_LESSONS}/${id}`
-    );
+    const res = await apiConfig().getRequest(`${ApiUrls.GROUP_LESSONS}/${id}`);
     return res;
   },
 
   async createGroup(model: Group): Promise<any> {
     const res = await apiConfig().postRequest(ApiUrls.Groups, model);
+    return res;
+  },
+
+  // ...avvalgi metodlar
+
+  async assignTeachersToGroup(payload: AddGroupTeacher) {
+    const res = await apiConfig().postRequest(ApiUrls.GROUP_TEACHERS, payload);
+    return res;
+  },
+  async assignStudentsToGroup(payload: AddGroupTeacher) {
+    const res = await apiConfig().postRequest(ApiUrls.GROUP_STUDENTS, payload);
     return res;
   },
 

@@ -19,14 +19,14 @@ export const useGroup = (params: any, id?: number) => {
 
   const getGroupStudentsQuery = useQuery({
     enabled: !!id,
-    queryKey: ["group-students"],
+    queryKey: ["group-students",id],
     queryFn: async () => GroupService.getGroupStudents(id!),
   });
   const students = getGroupStudentsQuery.data;
 
   const getGroupTeachersQuery = useQuery({
     enabled: !!id,
-    queryKey: ["group-teachers"],
+    queryKey: ["group-teachers",id],
     queryFn: async () => GroupService.getGroupTeachers(id!),
   });
   const teachers = getGroupTeachersQuery.data;
@@ -39,6 +39,31 @@ export const useGroup = (params: any, id?: number) => {
       },
     });
   };
+
+  const useAssignTeacherToGroup = () => {
+    return useMutation({
+      mutationFn: (payload: {
+        groupId: number;
+        teacherId: number[];
+        status: boolean;
+        start_date: string;
+      }) => GroupService.assignTeachersToGroup(payload),
+      onSuccess: () => {
+        // O'qituvchilar ro'yxatini yangilash
+        queryClient.invalidateQueries({ queryKey: ["group-teachers"] });
+      },
+    });
+  };
+  const useAssignStudentToGroup = () => {
+    return useMutation({
+      mutationFn: (payload: any) => GroupService.assignStudentsToGroup(payload),
+      onSuccess: () => {
+        // O'qituvchilar ro'yxatini yangilash
+        queryClient.invalidateQueries({ queryKey: ["group-students"] });
+      },
+    });
+  };
+
   const updateGroupMutation = () => {
     return useMutation({
       mutationFn: ({ data, id }: { data: any; id: number }) =>
@@ -62,6 +87,8 @@ export const useGroup = (params: any, id?: number) => {
     students,
     teachers,
     lessons,
+    useAssignTeacherToGroup,
+    useAssignStudentToGroup,
     createGroupMutation,
     useDeleteGroup,
     updateGroupMutation,
