@@ -2,10 +2,21 @@ import * as Yup from "yup";
 
 export const groupSchema = Yup.object({
   name: Yup.string().required("Name is required"),
-  course_id: Yup.number().required("Please select a course"),
-  status: Yup.string().required("Please select a status"),
+  courseId: Yup.number().required("Please select a course"),
+  status: Yup.mixed<"new" | "active" | "completed" | "cancelled" | "pending">()
+    .oneOf(
+      ["new", "active", "completed", "cancelled", "pending"],
+      "Please select a valid status"
+    )
+    .required("Please select a status"),
   start_date: Yup.string().required("Start date is required"),
-  end_date: Yup.string().required("End date is required"),
+  start_time: Yup.string()
+    .matches(
+      /^([0-1]\d|2[0-3]):([0-5]\d)$/,
+      "Start time must be in HH:mm format"
+    )
+    .required("Start time is required"),
+  roomId: Yup.number().required("Room is required"),
 });
 
 export const branchSchema = Yup.object({
@@ -39,7 +50,6 @@ export const courseSchema = Yup.object().shape({
     .min(1, "Duration must be at least 1 month")
     .required("Duration is required"),
 });
-
 
 export const RoomValidation = Yup.object({
   branchId: Yup.number()

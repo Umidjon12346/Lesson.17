@@ -7,15 +7,14 @@ import {
   Form as AntForm,
   Button,
   message,
+  TimePicker,
 } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 import dayjs from "dayjs";
+
 import type { Group } from "../../types/group";
-
 import { useCourse, useGroup } from "../../hooks";
-
 import { groupSchema } from "../../utility";
 
 const { Option } = Select;
@@ -39,63 +38,71 @@ const GroupModal: React.FC<GroupModalProps> = ({
   } = useForm<Group>({
     resolver: yupResolver(groupSchema),
     defaultValues: {
-      id: 0,
       name: "",
-      course_id: 0,
-      status: "",
+      courseId: undefined,
+      status: "active",
       start_date: "",
-      end_date: "",
+      start_time: "",
+      roomId: 1,
     },
   });
 
-  console.log(editData);
-  
   const { createGroupMutation, updateGroupMutation } = useGroup({});
-  const { mutate: updatefn } = updateGroupMutation();
-  const { mutate: createfn } = createGroupMutation();
+  const { mutate: createFn } = createGroupMutation();
+  const { mutate: updateFn } = updateGroupMutation();
 
-  const { data } = useCourse({});
-  const courses = data?.data?.courses;
+  const { data: courseData } = useCourse({});
+  const courses = courseData?.data?.courses || [];
+
   useEffect(() => {
     if (editData) {
-      reset(editData);
+      reset({
+        id: editData.id,
+        name: editData.name,
+        courseId: editData.course?.id,
+        status: editData.status,
+        start_date: editData.start_date,
+        start_time: editData.start_time,
+        roomId: editData.roomId,
+      });
     } else {
       reset({
-        id: 0,
         name: "",
-        course_id: 0,
-        status: "",
+        courseId: undefined,
+        status: "active",
         start_date: "",
-        end_date: "",
+        start_time: "",
+        roomId: 1,
       });
     }
   }, [editData, reset]);
 
-  const onSubmit = async (values: Group) => {
-    const payload = {
-      name: values.name,
-      course_id: values.id,
-      status: values.status,
-      start_date: values.start_date,
-      end_date: values.end_date,
-    };
-
-    
-    try {
-      if (editData) {
-        updatefn({ data: payload, id: editData.id! }); // await ishlaydi
-        message.success("Group updated successfully");
-      } else {
-        createfn(payload);
-        message.success("Group created successfully");
-      }
-
-      onClose();
-    } catch (error: any) {
-      console.error(error);
-      message.error("Error creating or updating group");
-    }
+const onSubmit = (values: Group) => {
+  const payload = {
+    name: values.name,
+    courseId: values.course?.id ?? values.courseId, // fallback
+    status: values.status,
+    start_date: values.start_date,
+    start_time: values.start_time,
+    roomId: values.roomId,
   };
+
+  try {
+    if (editData) {
+      updateFn({ data: payload, id: editData.id! });
+      message.success("Group updated successfully");
+    } else {
+      createFn(payload);
+      message.success("Group created successfully");
+    }
+    onClose();
+  } catch (error) {
+    message.error("Error creating or updating group");
+    console.error(error);
+  }
+};
+
+
 
   return (
     <Modal
@@ -114,25 +121,24 @@ const GroupModal: React.FC<GroupModalProps> = ({
             name="name"
             control={control}
             render={({ field }) => (
-              <Input {...field} placeholder="Enter group name" />
+              <Input {...field} placeholder="Enter name" />
             )}
           />
         </AntForm.Item>
 
         <AntForm.Item
           label="Course"
-          validateStatus={errors.course_id ? "error" : ""}
-          help={errors.course_id?.message}
+          validateStatus={errors.courseId ? "error" : ""}
+          help={errors.courseId?.message}
         >
           <Controller
-            name="course_id"
+            name="courseId"
             control={control}
             render={({ field }) => (
               <Select
                 {...field}
-                placeholder="Select a course"
-                value={field.value || undefined}
-                onChange={(value) => field.onChange(value)}
+                placeholder="Select course"
+                onChange={(val) => field.onChange(val)}
               >
                 {courses.map((course: any) => (
                   <Option key={course.id} value={course.id}>
@@ -153,12 +159,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
             name="status"
             control={control}
             render={({ field }) => (
-              <Select
-                {...field}
-                placeholder="Select status"
-                value={field.value || undefined}
-                onChange={(value) => field.onChange(value)}
-              >
+              <Select {...field} onChange={(val) => field.onChange(val)}>
                 <Option value="active">Active</Option>
                 <Option value="new">New</Option>
               </Select>
@@ -177,33 +178,59 @@ const GroupModal: React.FC<GroupModalProps> = ({
             render={({ field }) => (
               <DatePicker
                 style={{ width: "100%" }}
-                value={field.value ? dayjs(field.value) : undefined}
-                onChange={(_, dateString) => field.onChange(dateString)}
+                value={field.value ? dayjs(field.value) : null}
+                onChange={(_, dateStr) => field.onChange(dateStr)}
               />
             )}
           />
         </AntForm.Item>
 
         <AntForm.Item
-          label="End Date"
-          validateStatus={errors.end_date ? "error" : ""}
-          help={errors.end_date?.message}
+          label="Start Time"
+          validateStatus={errors.start_time ? "error" : ""}
+          help={errors.start_time?.message}
         >
           <Controller
-            name="end_date"
+            name="start_time"
             control={control}
             render={({ field }) => (
-              <DatePicker
+              <TimePicker
                 style={{ width: "100%" }}
-                value={field.value ? dayjs(field.value) : undefined}
-                onChange={(_, dateString) => field.onChange(dateString)}
+                format="HH:mm"
+                value={field.value ? dayjs(field.value, "HH:mm") : null}
+                onChange={(time) => {
+                  if (time) {
+                    field.onChange(time.format("HH:mm")); // <-- Faqat string yuborish
+                  } else {
+                    field.onChange("");
+                  }
+                }}
+              />
+            )}
+          />
+        </AntForm.Item>
+
+        <AntForm.Item
+          label="Room ID"
+          validateStatus={errors.roomId ? "error" : ""}
+          help={errors.roomId?.message}
+        >
+          <Controller
+            name="roomId"
+            control={control}
+            render={({ field }) => (
+              <Input
+                type="number"
+                {...field}
+                placeholder="Enter room ID"
+                min={1}
               />
             )}
           />
         </AntForm.Item>
 
         <Button type="primary" htmlType="submit" block>
-          Save
+          {editData ? "Update" : "Create"}
         </Button>
       </AntForm>
     </Modal>
