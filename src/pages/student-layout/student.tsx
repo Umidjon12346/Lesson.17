@@ -19,11 +19,11 @@ function Student() {
     limit: 5,
   });
 
-  const { data, useStudentDelete } = useStudent({ params });
+  const { data, useStudentDelete } = useStudent( params );
+  console.log(data);
   const {mutate:studentDelete} = useStudentDelete()
 
-  const students = data?.data.students ?? [];
-  const total = data?.data.total ?? 0;
+  const students = data?.data.data ?? [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editData, setEditData] = useState<Student | null>(null);
@@ -109,7 +109,7 @@ function Student() {
         pagination={{
           current: params.page,
           pageSize: params.limit,
-          total,
+          total:data?.data.total,
           showSizeChanger: true,
           pageSizeOptions: ["4", "5", "10", "20"],
         }}

@@ -18,6 +18,7 @@ export const useGeneral = () => {
     searchParams.set("limit", pageSize!.toString());
     navigate({ search: `?${searchParams.toString()}` });  
   };
+  
 const updateLessonStatus = () => {
   return useMutation({
     mutationFn: ({

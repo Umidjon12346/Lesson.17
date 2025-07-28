@@ -66,7 +66,7 @@ const StudentModal: React.FC<StudentModalProps> = ({
     lidId: editData?.lidId || 0,
   };
 
-  const {useStudentCreate,useStudentUpdate} = useStudent({})
+  const {useStudentCreate,useStudentUpdate} = useStudent({page:1,limit:5})
   const {mutate:updatefn} = useStudentUpdate()
   const {mutate:createfn} = useStudentCreate()
 
