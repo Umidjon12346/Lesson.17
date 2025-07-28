@@ -128,13 +128,19 @@ function LessonLists({ lessons }: any) {
               const formattedDate = dayjs(lesson.date).format("DD.MM");
               const dayName = dayjs(lesson.date).format("ddd").toUpperCase();
               const statusColor = getStatusColor(lesson.status);
-
+              console.log(lesson);
+              
               return (
                 <Tooltip
                   key={lesson.id}
                   title={
                     <div className="text-center">
                       <div className="font-semibold">Dars {index + 1}</div>
+                      {lesson.notes && (
+                        <div className="text-xs  mt-1">
+                          {lesson.notes}
+                        </div>
+                      )}
                     </div>
                   }
                 >
