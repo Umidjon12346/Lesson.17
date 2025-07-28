@@ -77,10 +77,10 @@ const GroupModal: React.FC<GroupModalProps> = ({
     }
   }, [editData, reset]);
 
-const onSubmit = (values: Group) => {
+const onSubmit = async (values: Group) => {
   const payload = {
     name: values.name,
-    courseId: values.course?.id ?? values.courseId, // fallback
+    courseId: values.course?.id ?? values.courseId,
     status: values.status,
     start_date: values.start_date,
     start_time: values.start_time,
@@ -89,18 +89,21 @@ const onSubmit = (values: Group) => {
 
   try {
     if (editData) {
-      updateFn({ data: payload, id: editData.id! });
+      await updateFn({ data: payload, id: editData.id! }); // await
       message.success("Group updated successfully");
     } else {
-      createFn(payload);
+      await createFn(payload); // await
       message.success("Group created successfully");
     }
+
+    // ✅ faqat success bo‘lsa modal yopiladi
     onClose();
   } catch (error) {
     message.error("Error creating or updating group");
     console.error(error);
   }
 };
+
 
 
 
