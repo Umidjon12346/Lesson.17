@@ -163,7 +163,7 @@ const onSubmit = async (values: Group) => {
             control={control}
             render={({ field }) => (
               <Select {...field} onChange={(val) => field.onChange(val)}>
-                <Option value="active">Active</Option>
+                <Option value="inactive">Active</Option>
                 <Option value="new">New</Option>
               </Select>
             )}

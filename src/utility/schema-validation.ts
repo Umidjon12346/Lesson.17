@@ -12,8 +12,8 @@ export const groupSchema = Yup.object({
   start_date: Yup.string().required("Start date is required"),
   start_time: Yup.string()
     .matches(
-      /^([0-1]\d|2[0-3]):([0-5]\d)$/,
-      "Start time must be in HH:mm format"
+      /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/,
+      "Start time must be in HH:mm format (00:00-23:59)"
     )
     .required("Start time is required"),
   roomId: Yup.number().required("Room is required"),

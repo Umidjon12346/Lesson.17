@@ -20,7 +20,6 @@ function Student() {
   });
 
   const { data, useStudentDelete } = useStudent( params );
-  console.log(data);
   const {mutate:studentDelete} = useStudentDelete()
 
   const students = data?.data.data ?? [];

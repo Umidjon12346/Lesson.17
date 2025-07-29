@@ -8,6 +8,11 @@ export const useGroup = (params: any, id?: number) => {
     queryKey: ["groups", params],
     queryFn: () => GroupService.getGroups(params),
   });
+    const { data: groupById } = useQuery({
+      enabled: !!id,
+      queryKey: ["group", id],
+      queryFn: () => GroupService.getGroupById(id!),
+    });
 
     const getGroupLessonsQuery = useQuery({
       enabled: !!id,
@@ -87,6 +92,7 @@ export const useGroup = (params: any, id?: number) => {
     students,
     teachers,
     lessons,
+    groupById,
     useAssignTeacherToGroup,
     useAssignStudentToGroup,
     createGroupMutation,

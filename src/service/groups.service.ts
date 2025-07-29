@@ -8,6 +8,11 @@ export const GroupService = {
     return res;
   },
 
+   getGroupById: async (id: number) => {
+    const res = await apiConfig().getRequest(`${ApiUrls.Groups}/${id}`)
+    return res
+  },
+
   async getGroupStudents(id: number) {
     const res = await apiConfig().getRequest(
       `${ApiUrls.GROUP_STUDENTS_BY_GROUP_ID}/${id}`

@@ -85,7 +85,7 @@ function LessonLists({ lessons }: any) {
         return "bg-yellow-400";
       case "yakunlangan":
         return "bg-green-200";
-      case "yangi":
+      case "new":
         return "bg-[#ccc]";
       default:
         return;
@@ -128,7 +128,6 @@ function LessonLists({ lessons }: any) {
               const formattedDate = dayjs(lesson.date).format("DD.MM");
               const dayName = dayjs(lesson.date).format("ddd").toUpperCase();
               const statusColor = getStatusColor(lesson.status);
-              console.log(lesson);
               
               return (
                 <Tooltip
