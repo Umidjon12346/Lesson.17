@@ -263,9 +263,18 @@ console.log(groupById);
                     </Descriptions.Item>
                     <Descriptions.Item label="Status">
                       <Tag
-                        color={groupById.data.group.is_active ? "green" : "red"}
+                        color={
+                          groupById.data.group.status === "new"
+                            ? "blue"
+                            : groupById.data.group.status === "active"
+                            ? "green"
+                            : groupById.data.group.status === "inactive"
+                            ? "red"
+                            : "default"
+                        }
                       >
-                        {groupById.data.group.is_active ? "Active" : "Inactive"}
+                        {groupById.data.group.status?.charAt(0).toUpperCase() +
+                          groupById.data.group.status?.slice(1)}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item label="Description">
