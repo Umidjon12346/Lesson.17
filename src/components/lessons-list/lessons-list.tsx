@@ -1,5 +1,5 @@
-import { Button, message, Tooltip } from "antd";
-import { useRef, useState } from "react";
+import { Button, message, Tag, Tooltip } from "antd";
+import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useGeneral } from "../../hooks";
@@ -14,6 +14,11 @@ function LessonLists({ lessons }: any) {
   const [description, setDescription] = useState("");
   const { updateLessonStatus } = useGeneral();
   const { mutate: updateFn } = updateLessonStatus();
+
+  const today = dayjs().format("YYYY-MM-DD");
+  const todayLessonIndex = lessons.findIndex(
+    (lesson: any) => dayjs(lesson.date).format("YYYY-MM-DD") === today
+  );
 
   const handleScroll = () => {
     if (containerRef.current) {
@@ -62,10 +67,10 @@ function LessonLists({ lessons }: any) {
       },
       {
         onSuccess: () => {
-          message.success("Dars holati muvaffaqiyatli o'zgartirildi");
+          message.success("Lesson status successfully updated");
         },
         onError: () => {
-          message.error("Xatolik yuz berdi");
+          message.error("An error occurred");
         },
       }
     );
@@ -83,27 +88,80 @@ function LessonLists({ lessons }: any) {
         return "bg-red-400";
       case "kechiktirilgan":
         return "bg-yellow-400";
-      case "yakunlangan":
+      case "completed":
         return "bg-green-200";
       case "new":
         return "bg-[#ccc]";
       default:
-        return;
+        return "";
     }
   };
 
+  // Scroll to today's lesson
+  useEffect(() => {
+    if (!containerRef.current || todayLessonIndex === -1) return;
+
+    const container = containerRef.current;
+    const lessonWidth = 76; // approx width + gap
+    const scrollTo =
+      lessonWidth * todayLessonIndex -
+      container.clientWidth / 2 +
+      lessonWidth / 2;
+
+    container.scrollTo({
+      left: scrollTo,
+      behavior: "smooth",
+    });
+  }, [lessons]);
+
+  // Mark past lessons as completed if no status
+  useEffect(() => {
+    const pastLessons = lessons.filter(
+      (lesson: any) =>
+        dayjs(lesson.date).isBefore(dayjs(), "day") &&
+        (!lesson.status || lesson.status === "")
+    );
+
+    pastLessons.forEach((lesson: any) => {
+      updateFn({
+        id: lesson.id,
+        status: "completed",
+        note: "Automatically marked as completed",
+      });
+    });
+  }, [lessons]);
+
   return (
     <div className="relative mt-6">
-      {/* Header */}
-      <div className="mb-4">
+      <div className="mb-5">
         <h2 className="text-xl font-bold text-gray-800 mb-1">
-          Darslar Jadvali
+          Lesson Schedule
         </h2>
-        <p className="text-sm text-gray-500">Jami {lessons.length} ta dars</p>
+        {/* Statistics */}
+        <div className="flex items-center gap-3 text-sm text-gray-600 mt-2">
+          <span>Total lessons:</span>
+          <Tag color="blue">{lessons.length}</Tag>
+
+          <span>Cancelled:</span>
+          <Tag color="red">
+            {
+              lessons.filter((lesson: any) => lesson.status === "cancelled")
+                .length
+            }
+          </Tag>
+
+          <span>Completed:</span>
+          <Tag color="green">
+            {
+              lessons.filter((lesson: any) => lesson.status === "completed")
+                .length
+            }
+          </Tag>
+        </div>
       </div>
 
       {/* Container */}
-      <div className="relative bg-white rounded-2xl  overflow-hidden">
+      <div className="relative bg-white rounded-2xl overflow-hidden">
         {/* Gradient Overlays */}
         <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
@@ -128,17 +186,16 @@ function LessonLists({ lessons }: any) {
               const formattedDate = dayjs(lesson.date).format("DD.MM");
               const dayName = dayjs(lesson.date).format("ddd").toUpperCase();
               const statusColor = getStatusColor(lesson.status);
-              
+              const isToday = dayjs(lesson.date).format("YYYY-MM-DD") === today;
+
               return (
                 <Tooltip
                   key={lesson.id}
                   title={
                     <div className="text-center">
-                      <div className="font-semibold">Dars {index + 1}</div>
+                      <div className="font-semibold">Lesson {index + 1}</div>
                       {lesson.notes && (
-                        <div className="text-xs  mt-1">
-                          {lesson.notes}
-                        </div>
+                        <div className="text-xs mt-1">{lesson.notes}</div>
                       )}
                     </div>
                   }
@@ -146,11 +203,19 @@ function LessonLists({ lessons }: any) {
                   <div
                     className={`
                       min-w-[70px] h-[70px] 
-                      ${statusColor} rounded-xl flex flex-col items-center justify-center cursor-pointer hover:scale-105 transition-all`}
+                      ${statusColor} rounded-xl flex flex-col items-center justify-center cursor-pointer 
+                      hover:scale-105 transition-all
+                      ${isToday ? "border-2 border-blue-600 shadow-md" : ""}
+                    `}
                     onClick={() => handleLessonClick(lesson, index)}
                   >
                     <div className="text-xs opacity-75">{dayName}</div>
                     <div className="text-sm font-bold">{formattedDate}</div>
+                    {isToday && (
+                      <div className="text-[10px] font-semibold text-blue-800 mt-1">
+                        Today
+                      </div>
+                    )}
                   </div>
                 </Tooltip>
               );
