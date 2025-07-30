@@ -66,9 +66,10 @@ function Rooms() {
       key: "actions",
       render: (_: any, record: Room) => (
         <Space size="middle">
-          <Button type="primary" onClick={() => editItem(record)}>
-            <EditOutlined />
-          </Button>
+          <Button
+            onClick={() => editItem(record)}
+            icon={<EditOutlined />}
+          ></Button>
           <PopConfirm onDelete={() => handleDelete(record.id!)} />
         </Space>
       ),

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Table } from "antd";
+import { Button, Table, Tooltip } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { Course } from "../../types/course";
 import { useLocation } from "react-router-dom";
@@ -52,7 +52,26 @@ function Courses() {
 
   const columns: ColumnsType<CourseWithId> = [
     { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Description", dataIndex: "description", key: "description" },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <div
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 200, // yoki kerakli uzunlik
+            }}
+          >
+            {text}
+          </div>
+        </Tooltip>
+      ),
+    },
+
     { title: "Price", dataIndex: "price", key: "price" },
     { title: "Duration", dataIndex: "duration", key: "duration" },
     {
@@ -76,8 +95,7 @@ function Courses() {
               setIsModalOpen(true);
             }}
             icon={<EditOutlined />}
-          >
-          </Button>
+          ></Button>
           <PopConfirm onDelete={() => handleDelete(record.id)} />
         </div>
       ),
