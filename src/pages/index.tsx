@@ -4,6 +4,7 @@ const SignIn = lazy(()=> import('./auth/sign-in'))
 const SignUp = lazy(()=> import('./auth/sign-up'))
 const StudentLayout = lazy(()=>import("./student-layout/student"))
 const AdminLayout = lazy(()=>import("./admin-layout/admin"))
+const AdminProfile = lazy(()=>import("./admin-layout/admin-profile"))
 const TeacherLayout = lazy(()=>import("./teacher-layout/teacher"))
 const Groups = lazy(()=>import("./groups/groups"))
 const LayoutProtect = lazy(()=>import("./protect-routes/layout-protect"))
@@ -16,11 +17,13 @@ const Worker = lazy(()=>import("./worker/worker"))
 const NotFound = lazy(()=>import("./worker/not-found"))
 
 
+
 export {
   SignIn,
   SignUp,
   StudentLayout,
   AdminLayout,
+  AdminProfile,
   TeacherLayout,
   Groups,
   LayoutProtect,

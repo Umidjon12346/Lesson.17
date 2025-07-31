@@ -119,14 +119,14 @@ function LessonLists({ lessons }: any) {
     const pastLessons = lessons.filter(
       (lesson: any) =>
         dayjs(lesson.date).isBefore(dayjs(), "day") &&
-        (!lesson.status || lesson.status === "")
+        (!lesson.status || lesson.status === "new")
     );
 
     pastLessons.forEach((lesson: any) => {
       updateFn({
         id: lesson.id,
         status: "completed",
-        note: "Automatically marked as completed",
+        note: "Tugadikuuuuu",
       });
     });
   }, [lessons]);

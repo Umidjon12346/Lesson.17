@@ -12,6 +12,7 @@ import {
   StudentLayout,
   TeacherLayout,
   AdminLayout,
+  AdminProfile,
   Groups,
   LayoutProtect,
   LoginProtect,
@@ -48,6 +49,7 @@ function Router() {
           }
         >
           <Route path="groups" element={<Groups />} />
+          <Route path="profile" element={<AdminProfile />} />
           <Route path="groups/:id" element={<SingleGroup />} />
           <Route path="students" element={<StudentLayout />} />
           <Route path="courses" element={<CourseLayout />} />
