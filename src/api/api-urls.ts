@@ -7,7 +7,8 @@ export class ApiUrls {
 
   public static STUDENT: string = "/students";
 
-  public static Teacher: string = "/teacher";
+  public static TEACHER: string = "/teacher";
+  public static TEACHER_GROUPS: string = "/group";
 
   public static BRANCH: string = "/branches";
 
@@ -20,7 +21,6 @@ export class ApiUrls {
   //Group teachers
   public static GROUP_TEACHERS: string = "/group-teachers";
   public static GROUP_TEACHERS_BY_GROUP_ID: string = "/group-teachers/by-group";
-
 
   // Group Students
   public static GROUP_STUDENTS: string = "/group-students";

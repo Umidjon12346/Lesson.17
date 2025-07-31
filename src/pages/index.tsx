@@ -6,7 +6,10 @@ const StudentLayout = lazy(()=>import("./student-layout/student"))
 const AdminLayout = lazy(()=>import("./admin-layout/admin"))
 const AdminProfile = lazy(()=>import("./admin-layout/admin-profile"))
 const TeacherLayout = lazy(()=>import("./teacher-layout/teacher"))
+const Teachers = lazy(()=>import("./teachers-layout/teachers"))
+const TeachersGroups = lazy(()=>import("./teacher-groups/teacher-groups"))
 const Groups = lazy(()=>import("./groups/groups"))
+const GroupsStudent = lazy(()=>import("./teacher-groups/group-students"))
 const LayoutProtect = lazy(()=>import("./protect-routes/layout-protect"))
 const LoginProtect = lazy(()=>import("./protect-routes/login-protect"))
 const CourseLayout = lazy(()=>import("./course-layout/course"))
@@ -21,11 +24,14 @@ const NotFound = lazy(()=>import("./worker/not-found"))
 export {
   SignIn,
   SignUp,
+  Teachers,
   StudentLayout,
   AdminLayout,
   AdminProfile,
   TeacherLayout,
+  TeachersGroups,
   Groups,
+  GroupsStudent,
   LayoutProtect,
   LoginProtect,
   CourseLayout,

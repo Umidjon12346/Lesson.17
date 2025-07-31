@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { Button, Dropdown, Layout, Menu, theme, Avatar } from "antd";
 import {
   LogoutOutlined,
   TeamOutlined,
-  BookOutlined,
-  HomeOutlined,
   UserOutlined,
+  SettingOutlined,
   DownOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
@@ -14,43 +13,14 @@ import type { MenuProps } from "antd/lib";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const items = [
-  {
-    label: "Groups",
-    key: "/admin/groups",
-    icon: <TeamOutlined />,
-  },
-  {
-    label: "Students",
-    key: "/admin/students",
-    icon: <TeamOutlined />,
-  },
-  {
-    label: "Courses",
-    key: "/admin/courses",
-    icon: <BookOutlined />,
-  },
-  {
-    label: "Teachers",
-    key: "/admin/teacher",
-    icon: <TeamOutlined />,
-  },
-  {
-    label: "Branches",
-    key: "/admin/branch",
-    icon: <HomeOutlined />,
-  },
-  {
-    label: "Rooms",
-    key: "/admin/rooms",
-    icon: <HomeOutlined />,
-  },
-];
-
-function Admin() {
+const Teachers = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const user = {
+    name: "John Doe", 
+  };
 
   const logout = () => {
     clearStorage();
@@ -60,10 +30,10 @@ function Admin() {
   const handleMenuClick = ({ key }: { key: string }) => {
     switch (key) {
       case "profile":
-        navigate("/admin/profile");
+        navigate("/teacher/profile");
         break;
       case "settings":
-        navigate("/admin/settings");
+        navigate("/teacher/settings");
         break;
       case "logout":
         logout();
@@ -80,6 +50,11 @@ function Admin() {
       label: "Profile",
     },
     {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: "Settings",
+    },
+    {
       type: "divider" as const,
     },
     {
@@ -90,13 +65,31 @@ function Admin() {
     },
   ];
 
+  const sidebarItems: MenuProps["items"] = [
+    {
+      label: "Groups",
+      key: "/teacher/groups",
+      icon: <TeamOutlined />,
+    },
+    {
+      label: "Profile",
+      key: "/teacher/profile",
+      icon: <UserOutlined />,
+    },
+    {
+      label: "Settings",
+      key: "/teacher/settings",
+      icon: <SettingOutlined />,
+    },
+  ];
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   useEffect(() => {
-    if (location.pathname === "/admin") {
-      navigate("/admin/groups");
+    if (location.pathname === "/teacher") {
+      navigate("/teacher/groups");
     }
   }, [location.pathname, navigate]);
 
@@ -106,6 +99,8 @@ function Admin() {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        breakpoint="lg"
+        onBreakpoint={(broken) => setCollapsed(broken)}
       >
         <div
           style={{
@@ -116,14 +111,18 @@ function Admin() {
             fontWeight: "bold",
           }}
         >
-          {collapsed ? "AP" : "Admin Panel"}
+          {collapsed ? "TP" : "Admin Panel"}
         </div>
-        <Menu
+        <Menu 
           theme="dark"
           mode="inline"
           selectedKeys={[location.pathname]}
-          onClick={({ key }) => navigate(key)}
-          items={items}
+          onClick={({ key }) => {
+            if (location.pathname !== key) {
+              navigate(key);
+            }
+          }}
+          items={sidebarItems}
         />
       </Sider>
 
@@ -148,7 +147,7 @@ function Admin() {
               style={{ display: "flex", alignItems: "center", gap: "8px" }}
             >
               <Avatar size="small" icon={<UserOutlined />} />
-              <span>Admin</span>
+              <span>{user?.name || "Teacher"}</span>
               <DownOutlined />
             </Button>
           </Dropdown>
@@ -173,6 +172,6 @@ function Admin() {
       </Layout>
     </Layout>
   );
-}
+};
 
-export default Admin;
+export default Teachers;
