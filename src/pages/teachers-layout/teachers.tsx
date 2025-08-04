@@ -4,7 +4,6 @@ import {
   LogoutOutlined,
   TeamOutlined,
   UserOutlined,
-  SettingOutlined,
   DownOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
@@ -50,11 +49,6 @@ const Teachers = () => {
       label: "Profile",
     },
     {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "Settings",
-    },
-    {
       type: "divider" as const,
     },
     {
@@ -70,16 +64,6 @@ const Teachers = () => {
       label: "Groups",
       key: "/teacher/groups",
       icon: <TeamOutlined />,
-    },
-    {
-      label: "Profile",
-      key: "/teacher/profile",
-      icon: <UserOutlined />,
-    },
-    {
-      label: "Settings",
-      key: "/teacher/settings",
-      icon: <SettingOutlined />,
     },
   ];
 
