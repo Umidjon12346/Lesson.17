@@ -160,7 +160,7 @@ const GroupTeachers = ({ teachers, groupId }: any) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { groupById } = useGroup({}, groupId); // ✅ to‘g‘rilandi
-  const { data } = useTeachers({ page: 1, limit: 20 });
+  const { data } = useTeachers({ page: 1, limit: 100 });
   const allTeachers = data?.data.data || [];
 
   const activeTeachersCount = teachers.filter(

@@ -132,6 +132,14 @@ const SignIn: React.FC = () => {
               >
                 Sign In
               </Button>
+              <div style={{ marginTop: "16px", textAlign: "center" }}>
+                <a
+                  onClick={() => navigate("/forgot-password")}
+                  style={{ color: "#1677ff" }}
+                >
+                  Forgot password?
+                </a>
+              </div>
             </Form>
           )}
         </Formik>

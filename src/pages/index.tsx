@@ -2,6 +2,7 @@ import { lazy } from "react";
 
 const SignIn = lazy(()=> import('./auth/sign-in'))
 const SignUp = lazy(()=> import('./auth/sign-up'))
+const ForgetPassword = lazy(()=> import('./auth/forget-password'))
 const StudentLayout = lazy(()=>import("./student-layout/student"))
 const AdminLayout = lazy(()=>import("./admin-layout/admin"))
 const AdminProfile = lazy(()=>import("./admin-layout/admin-profile"))
@@ -24,6 +25,7 @@ const NotFound = lazy(()=>import("./worker/not-found"))
 export {
   SignIn,
   SignUp,
+  ForgetPassword,
   Teachers,
   StudentLayout,
   AdminLayout,

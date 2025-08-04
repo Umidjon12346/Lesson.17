@@ -24,6 +24,7 @@ import {
   NotFound,
   Teachers,
   GroupsStudent,
+  ForgetPassword,
 } from "../pages";
 import AppReducer from "../pages/app"
 
@@ -42,6 +43,7 @@ function Router() {
           }
         />
         <Route path="sign-up" element={<SignUp />} />
+        <Route path="forgot-password" element={<ForgetPassword />} />
 
         <Route
           path="admin"
@@ -67,7 +69,14 @@ function Router() {
 
         {/* TEACHER */}
         <Route path="teacher" element={<Teachers />}>
-          <Route path="groups" element={<TeachersGroups />} />
+          <Route
+            path="groups"
+            element={
+              <LayoutProtect>
+                <TeachersGroups />
+              </LayoutProtect>
+            }
+          />
           <Route path="students/:id" element={<GroupsStudent />} />
         </Route>
 
