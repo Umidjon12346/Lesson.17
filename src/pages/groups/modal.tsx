@@ -14,7 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import dayjs from "dayjs";
 
 import type { Group } from "../../types/group";
-import { useCourse, useGroup } from "../../hooks";
+import { useCourse, useGroup, useRoom } from "../../hooks";
 import { groupSchema } from "../../utility";
 
 const { Option } = Select;
@@ -52,7 +52,10 @@ const GroupModal: React.FC<GroupModalProps> = ({
   const { mutate: updateFn } = updateGroupMutation();
 
   const { data: courseData } = useCourse({});
+  const {data:roomData} = useRoom({})
   const courses = courseData?.data?.courses || [];
+  console.log(roomData);
+  
 
   useEffect(() => {
     if (editData) {
@@ -214,7 +217,7 @@ const onSubmit = async (values: Group) => {
         </AntForm.Item>
 
         <AntForm.Item
-          label="Room ID"
+          label="Room"
           validateStatus={errors.roomId ? "error" : ""}
           help={errors.roomId?.message}
         >
@@ -222,12 +225,24 @@ const onSubmit = async (values: Group) => {
             name="roomId"
             control={control}
             render={({ field }) => (
-              <Input
-                type="number"
+              <Select
                 {...field}
-                placeholder="Enter room ID"
-                min={1}
-              />
+                showSearch
+                placeholder="Select room"
+                optionFilterProp="children"
+                onChange={(val) => field.onChange(val)}
+                filterOption={(input, option) =>
+                  (option?.children as any)
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {(roomData?.data?.rooms || []).map((room: any) => (
+                  <Option key={room.id} value={room.id}>
+                    {room.name}
+                  </Option>
+                ))}
+              </Select>
             )}
           />
         </AntForm.Item>

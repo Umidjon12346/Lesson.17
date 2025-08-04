@@ -48,7 +48,6 @@ const ForgetPassword = () => {
 
   const handleOtpSubmit = (values:any) => {
     const {otp} = values
-    console.log(otp);
     
     verifyOtp(
       { otp: Number(otp) }, // String -> Number
